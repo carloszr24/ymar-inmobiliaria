@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 
 const services = [
@@ -80,6 +81,71 @@ export default function SobreNosotrosPage() {
         </div>
       </section>
       
+      {/* Team */}
+      <section className="py-24 px-6 md:px-10 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-end">
+            {/* Left: text + RE/MAX badge */}
+            <div className="flex flex-col justify-between h-full">
+              <div>
+                <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">El equipo</p>
+                <h2 className="section-title mb-2">Alessandra Maggi</h2>
+                <p className="text-stone-500 text-base md:text-lg font-medium mb-8">Agente asociada RE/MAX en Almería</p>
+
+                <div className="space-y-6 text-stone-600 text-lg leading-relaxed mb-10">
+                  <p>
+                    Soy agente inmobiliaria especializada en Almería, y mi forma de trabajar se basa
+                    en la cercanía, la transparencia y una visión estratégica de cada operación.
+                    Mi prioridad es que cada cliente se sienta acompañado con claridad y confianza
+                    desde el primer contacto.
+                  </p>
+                  <p>
+                    Trabajo cada proceso de principio a fin: análisis realista del mercado, estrategia
+                    de comercialización y negociación orientada a proteger tus intereses y maximizar
+                    el valor de cada decisión.
+                  </p>
+                  <p>
+                    Como agente asociada RE/MAX, he reforzado mi método con formación específica en
+                    comercialización y cierre, captación en exclusiva, trabajo con compradores y el
+                    modelo profesional del agente inmobiliario RE/MAX. Ese enfoque me permite ofrecer
+                    un servicio sólido, personalizado y enfocado en resultados.
+                  </p>
+                </div>
+
+                {/* RE/MAX badge */}
+                <div className="mt-6">
+                  <a
+                    href="https://www.remax.es/buscador-de-agentes/almeria/roquetas-de-mar/todos/alessandra-maggi-18639/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Image
+                      src="/images/remax.certified-agent.png"
+                      alt="RE/MAX Certified Agent"
+                      width={240}
+                      height={120}
+                      className="h-auto w-56 object-contain hover:opacity-80 transition-opacity"
+                    />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: photo */}
+            <div className="relative w-full max-w-[680px] ml-auto">
+              <div className="relative aspect-[3/4] overflow-hidden">
+                <Image
+                  src="/images/alessandra-maggi.png"
+                  alt="Alessandra Maggi, agente inmobiliaria en Almería"
+                  fill
+                  className="object-cover object-top"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA ── */}
       <section className="bg-stone-950 text-white py-20 px-6 md:px-10 text-center">
         <h2 className="font-display text-4xl font-light mb-6">¿Hablamos?</h2>

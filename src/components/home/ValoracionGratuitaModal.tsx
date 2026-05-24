@@ -133,9 +133,6 @@ export function ValoracionGratuitaModal({ triggerClassName = '', triggerLabel = 
 
     setSubmitting(true)
     try {
-      // #region agent log
-      fetch('http://127.0.0.1:7499/ingest/0c6d3681-619e-41fd-9119-2e1b47ea3ed5',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'6f5192'},body:JSON.stringify({sessionId:'6f5192',runId:'pre-fix',hypothesisId:'H2',location:'src/components/home/ValoracionGratuitaModal.tsx:onSubmit:beforeFetch',message:'Submitting valuation form to /api/leads',data:{hasName:Boolean(form.name.trim()),hasPhone:Boolean(form.phone.trim()),hasEmail:Boolean(form.email.trim()),source:'web_valoracion',intent:'vender',priority:form.saleTimeline === 'Lo antes posible' ? 'alta' : 'media',saleTimeline:form.saleTimeline || null},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -159,15 +156,9 @@ export function ValoracionGratuitaModal({ triggerClassName = '', triggerLabel = 
           ].join('\n'),
         }),
       })
-      // #region agent log
-      fetch('http://127.0.0.1:7499/ingest/0c6d3681-619e-41fd-9119-2e1b47ea3ed5',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'6f5192'},body:JSON.stringify({sessionId:'6f5192',runId:'pre-fix',hypothesisId:'H5',location:'src/components/home/ValoracionGratuitaModal.tsx:onSubmit:afterFetch',message:'Received /api/leads response',data:{ok:res.ok,status:res.status},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       if (!res.ok) throw new Error('No se pudo enviar la solicitud')
       setSubmitted(true)
     } catch {
-      // #region agent log
-      fetch('http://127.0.0.1:7499/ingest/0c6d3681-619e-41fd-9119-2e1b47ea3ed5',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'6f5192'},body:JSON.stringify({sessionId:'6f5192',runId:'pre-fix',hypothesisId:'H5',location:'src/components/home/ValoracionGratuitaModal.tsx:onSubmit:catch',message:'Valuation form submission failed on client',data:{errorShown:'No se pudo enviar la solicitud. Intentalo de nuevo.'},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       setError('No se pudo enviar la solicitud. Intentalo de nuevo.')
     } finally {
       setSubmitting(false)

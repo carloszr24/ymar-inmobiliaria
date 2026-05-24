@@ -69,9 +69,6 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    // #region agent log
-    fetch('http://127.0.0.1:7499/ingest/0c6d3681-619e-41fd-9119-2e1b47ea3ed5',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'6f5192'},body:JSON.stringify({sessionId:'6f5192',runId:'pre-fix',hypothesisId:'H3',location:'src/app/api/leads/route.ts:POST:afterJson',message:'Parsed /api/leads request body',data:{hasFullName:Boolean(body?.fullName),hasPhone:Boolean(body?.phone),hasEmail:Boolean(body?.email),source:body?.source ?? null,intent:body?.intent ?? null,priority:body?.priority ?? null},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     const fullName = String(body.fullName || '').trim()
     const phone = String(body.phone || '').trim()
     const email = String(body.email || '').trim() || null
@@ -96,9 +93,6 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = createAdminSupabase()
-    // #region agent log
-    fetch('http://127.0.0.1:7499/ingest/0c6d3681-619e-41fd-9119-2e1b47ea3ed5',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'6f5192'},body:JSON.stringify({sessionId:'6f5192',runId:'pre-fix',hypothesisId:'H4',location:'src/app/api/leads/route.ts:POST:beforeInsert',message:'Attempting Supabase lead insert',data:{hasResendApiKey:Boolean(process.env.RESEND_API_KEY),hasLeadsNotificationEmail:Boolean(process.env.LEADS_NOTIFICATION_EMAIL),hasResendFromEmail:Boolean(process.env.RESEND_FROM_EMAIL),fullNameLength:fullName.length,hasPhone:Boolean(phone),hasEmail:Boolean(email),source,intent,priority,hasPropertyRef:Boolean(propertyRef),hasSaleTimeline:Boolean(saleTimeline)},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     const { data, error } = await supabase
       .from('leads')
       .insert({
@@ -117,9 +111,6 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) throw error
-    // #region agent log
-    fetch('http://127.0.0.1:7499/ingest/0c6d3681-619e-41fd-9119-2e1b47ea3ed5',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'6f5192'},body:JSON.stringify({sessionId:'6f5192',runId:'pre-fix',hypothesisId:'H1',location:'src/app/api/leads/route.ts:POST:afterInsert',message:'Supabase lead insert succeeded',data:{leadId:(data as LeadRow | null)?.id ?? null},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
 
     await sendLeadEmailNotification({
       fullName,
@@ -131,10 +122,7 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(rowsToLeads([data as LeadRow])[0], { status: 201 })
-  } catch (error) {
-    // #region agent log
-    fetch('http://127.0.0.1:7499/ingest/0c6d3681-619e-41fd-9119-2e1b47ea3ed5',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'6f5192'},body:JSON.stringify({sessionId:'6f5192',runId:'pre-fix',hypothesisId:'H1',location:'src/app/api/leads/route.ts:POST:catch',message:'Unhandled error creating lead',data:{errorName:error instanceof Error ? error.name : 'unknown',errorMessage:error instanceof Error ? error.message : String(error)},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
+  } catch {
     return NextResponse.json({ error: 'Error al crear lead' }, { status: 500 })
   }
 }

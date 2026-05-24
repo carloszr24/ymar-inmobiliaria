@@ -423,10 +423,10 @@ export default function AdminPage() {
               placeholder="Contraseña"
               className={cn(
                 'w-full border px-4 py-3 text-sm focus:outline-none transition-colors',
-                pwError ? 'border-brand-primary/40 bg-brand-primary/5' : 'border-stone-200 focus:border-stone-900'
+                pwError ? 'border-red-300 bg-red-50' : 'border-stone-200 focus:border-stone-900'
               )}
             />
-            {pwError && <p className="text-brand-primary text-xs">Contraseña incorrecta</p>}
+            {pwError && <p className="text-red-500 text-xs">Contraseña incorrecta</p>}
             <button onClick={login} className="btn-primary w-full py-3 text-sm">
               Entrar
             </button>
@@ -707,13 +707,13 @@ export default function AdminPage() {
                 </label>
               </div>
               {featuredCapError && (
-                <p className="text-brand-primary text-xs -mt-2">{featuredCapError}</p>
+                <p className="text-red-600 text-xs -mt-2">{featuredCapError}</p>
               )}
             </div>
 
             <div className="flex flex-col gap-2 pt-4 border-t border-stone-100">
               {submitError && (
-                <p className="text-brand-primary text-sm">{submitError}</p>
+                <p className="text-red-600 text-sm">{submitError}</p>
               )}
               <div className="flex items-center gap-3">
               <button type="submit" disabled={saving} className="btn-primary text-xs px-6 py-2.5 disabled:opacity-50">
@@ -790,7 +790,7 @@ export default function AdminPage() {
                         </button>
                         <button
                           onClick={() => setDeleteId(p.id)}
-                          className="text-xs text-brand-primary/70 hover:text-brand-primary transition-colors"
+                          className="text-xs text-red-400 hover:text-red-600 transition-colors"
                         >
                           Borrar
                         </button>

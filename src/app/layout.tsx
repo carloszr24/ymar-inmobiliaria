@@ -21,9 +21,9 @@ const logo = Montserrat({
 })
 
 export const metadata: Metadata = {
-  title: 'Ventable Inmobiliaria | Agencia inmobiliaria en Jerez',
-  description: 'Servicio inmobiliario personalizado en Jerez para compra, venta e inversión.',
-  keywords: 'ventable inmobiliaria, agencia inmobiliaria, jerez, pisos, casas, venta, compra',
+  title: 'Alessandra Maggi | Agente inmobiliaria en Almería',
+  description: 'Servicio inmobiliario personalizado en Almería y Roquetas de Mar para compra, venta e inversión.',
+  keywords: 'alessandra maggi, agente inmobiliaria, almería, roquetas de mar, pisos, casas, venta, compra',
 }
 
 export default function RootLayout({

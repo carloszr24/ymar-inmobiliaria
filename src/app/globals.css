@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --brand-blue: #1d335c;
-  --brand-blue-light: #2d4d87;
-  --brand-blue-dark: #142540;
-  --brand-red: #1d335c;
-  --brand-red-light: #2d4d87;
-  --brand-red-dark: #142540;
+  --brand-blue: #0057ff;
+  --brand-blue-light: #3d7dff;
+  --brand-blue-dark: #003eb8;
+  --brand-red: #c8102e;
+  --brand-red-light: #e13a53;
+  --brand-red-dark: #9c0e24;
   --brand-white: #ffffff;
   /* Backward-compatible token used throughout existing components */
   --gold: var(--brand-red);
@@ -154,7 +154,7 @@
 
 .lead-modal-kicker {
   margin: 0 0 0.25rem;
-  color: #e0e7ff;
+  color: #fce7f3;
   font-size: 0.72rem;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -168,7 +168,7 @@
 
 .lead-modal-subtitle {
   margin: 0.25rem 0 0;
-  color: #dbeafe;
+  color: #fdf2f8;
   font-size: 0.82rem;
   line-height: 1.45;
 }
@@ -200,7 +200,7 @@
   width: 100%;
   height: 0.45rem;
   border-radius: 999px;
-  background: #dbe7ff;
+  background: #f3e8ef;
   overflow: hidden;
 }
 
@@ -212,7 +212,7 @@
 }
 
 .lead-modal-section {
-  border: 1px solid #d6e1f5;
+  border: 1px solid #efe2ea;
   background: #fff;
   border-radius: 10px;
   padding: 0.65rem 0.75rem;
@@ -258,7 +258,7 @@
 .lead-modal select:focus,
 .lead-modal textarea:focus {
   outline: none;
-  border-color: #1d335c;
+  border-color: #7f145d;
 }
 
 .lead-modal-full {
@@ -267,10 +267,10 @@
 
 .lead-modal-error {
   margin: 0;
-  color: #1d335c;
+  color: #b91c1c;
   font-size: 0.8rem;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
   border-radius: 8px;
   padding: 0.5rem 0.65rem;
 }

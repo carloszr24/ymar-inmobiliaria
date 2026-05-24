@@ -24,17 +24,11 @@ export default function AdminLeadsPage() {
   })
 
   const fetchLeads = async () => {
-    // #region agent log
-    fetch('http://127.0.0.1:7474/ingest/405f2639-3a52-4550-ad87-60b4b9c70aff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c6d576'},body:JSON.stringify({sessionId:'c6d576',runId:'pre-fix',hypothesisId:'H4',location:'src/app/admin/leads/page.tsx:fetchLeads:start',message:'fetchLeads called',data:{hasWindow:typeof window!=='undefined'},timestamp:Date.now()})}).catch(()=>{})
-    // #endregion
     setLoading(true)
     setError('')
     try {
       const res = await fetch('/api/leads', { credentials: 'include' })
       const data = await res.json().catch(() => [])
-      // #region agent log
-      fetch('http://127.0.0.1:7474/ingest/405f2639-3a52-4550-ad87-60b4b9c70aff',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c6d576'},body:JSON.stringify({sessionId:'c6d576',runId:'pre-fix',hypothesisId:'H4',location:'src/app/admin/leads/page.tsx:fetchLeads:afterResponse',message:'fetchLeads response received',data:{ok:res.ok,status:res.status,itemCount:Array.isArray(data)?data.length:-1},timestamp:Date.now()})}).catch(()=>{})
-      // #endregion
       if (!res.ok) throw new Error('Error cargando leads')
       setLeads(
         (data as Lead[]).map((lead) => ({
@@ -193,7 +187,7 @@ export default function AdminLeadsPage() {
         </div>
       </section>
 
-      {error && <p className="text-sm text-brand-primary">{error}</p>}
+      {error && <p className="text-sm text-red-600">{error}</p>}
 
       <div className="bg-white border border-stone-200 overflow-x-auto">
         {loading ? (
@@ -254,7 +248,7 @@ export default function AdminLeadsPage() {
                       </select>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs px-2 py-1 ${inSla ? 'bg-emerald-50 text-emerald-700' : 'bg-brand-primary/10 text-brand-primary'}`}>
+                      <span className={`text-xs px-2 py-1 ${inSla ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
                         {inSla ? 'En SLA' : 'Fuera SLA'}
                       </span>
                     </td>

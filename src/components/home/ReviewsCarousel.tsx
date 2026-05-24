@@ -11,53 +11,53 @@ type Review = {
 const REVIEWS: Review[] = [
   {
     id: 1,
-    name: 'Cliente',
-    text: 'Tuve muy buena experiencia con Pablo. Desde el primer momento demostró un trato cercano y profesional. Asesora con honestidad, sin presiones, explicando cada paso del proceso de forma clara y resolviendo todas mis dudas con rapidez.',
+    name: 'Olga Albert',
+    text: 'Desde el primer momento supe que estaba en buenas manos. Muy competente, ágil y eficaz, siempre disponible para cualquier duda durante la compra.',
   },
   {
     id: 2,
-    name: 'Mitch M',
-    text: 'Trabajar con Ventable ha sido una experiencia fantástica. Desde el principio hasta el final, demostró una profesionalidad y dedicación excepcionales durante todo el proceso de compra de nuestra vivienda. Su conocimiento del mercado local nos ayudó a encontrar el hogar perfecto en un barrio que nos encantó.',
+    name: 'Maite G.v',
+    text: 'Mi experiencia ha sido excelente. He contado con Alessandra para la compra y la venta de vivienda, y en ambas ocasiones fue excepcional.',
   },
   {
     id: 3,
-    name: 'José ÁNGEL Maldonado Ríos',
-    text: 'Tuvimos la suerte de contar con esta inmobiliaria y la verdad es que nos fue en todo momento genial. Máxima profesionalidad y gran calidad humana. Estuvieron siempre pendientes de nuestras inquietudes y supieron asistirnos en todo el proceso.',
+    name: 'Pasquale',
+    text: 'Muy profesional y muy competente. Nos acompañó durante todo el proceso de venta, siempre disponible y con actitud cooperativa.',
   },
   {
     id: 4,
-    name: 'Beatriz G',
-    text: 'Muy buena experiencia con Pablo. La venta de nuestro piso fue complicada, pero en todo momento nos transmitió tranquilidad y confianza. Destacamos su profesionalidad, disponibilidad y la forma en que gestionó todo el proceso con claridad y eficacia. Sin duda, lo recomendaríamos.',
+    name: 'Joel Medina Castro',
+    text: 'Me asesoró desde el minuto 0 y me gestionó todo a la perfección. Compré con ella y años después también me volvió a vender la vivienda.',
   },
   {
     id: 5,
-    name: 'Angel Rodriguez Corral',
-    text: 'El trato por parte de Pablo es magnífico, atento, comprometido y súper resolutivo. Vendí y compré con él y no tendría ningún tipo de dudas de volver a contar con sus servicios.',
+    name: 'Jose Salmeron',
+    text: 'Muy contento con su trabajo: atención, amabilidad, persistencia y muy buena comunicación. Una gran profesional.',
   },
   {
     id: 6,
-    name: 'ALD',
-    text: 'La experiencia con la inmobiliaria ha sido de 10. Pablo es un crack, súper atento y siempre pendiente de todo. Todo fue facilísimo y ha sido muy sincero en todo momento. Da gusto tratar con gente así.',
+    name: 'Kamil Zygma',
+    text: 'Desde el primer contacto hasta la postcompra, todo genial. Te acompaña en cada paso y responde siempre a tus preguntas.',
   },
   {
     id: 7,
-    name: 'jose manuel de la hera',
-    text: 'Sin lugar a dudas la mejor. Desde el minuto 1 el trato, asesoramiento y gestión es personalizada y cercana. Confianza máxima y profesionalidad por bandera.',
+    name: 'Sole Moya Moya',
+    text: 'Una gran profesional. Se encargó de todos los aspectos de la venta, desde anuncios con fotos y vídeos hasta trámites administrativos.',
   },
   {
     id: 8,
-    name: 'Susana',
-    text: 'Si buscas una inmobiliaria de confianza, sin duda esa es Ventable. Pablo es una persona cercana y responsable, entregado a su trabajo, y te acompaña en todo el proceso de la venta de tu vivienda.',
+    name: 'Anthony Costa',
+    text: 'Tras la primera reunión supimos que queríamos que ella vendiera nuestro apartamento. Muy profesional, con plan claro y excelentes ideas.',
   },
   {
     id: 9,
-    name: 'Francisco Luis Monje Sanchez',
-    text: 'Genial. Vendió mi casa en poquísimo tiempo y sin preocuparme de nada. Los mejores profesionales de Jerez.',
+    name: 'Davide Scalici',
+    text: 'Excelente profesional: honesta, directa y muy atenta con sus clientes. Excepcional tanto a nivel profesional como humano.',
   },
   {
     id: 10,
-    name: 'Ruben Rosado',
-    text: 'Un profesional y agradable, todo muy bien detallado. Para todo tiene solución y siempre con disponibilidad. Con Ventable todo es mejor.',
+    name: 'TOMASZ KUZAWIŃSKI',
+    text: 'Muy buena ayuda y profesionalidad. Si quieres comprar o vender un piso, recomiendo trabajar con Alessandra.',
   },
 ]
 
