@@ -1,10 +1,14 @@
 import Link from 'next/link'
+import {
+  CONTACT,
+  emailHref,
+  mapsHref,
+  phoneHref,
+  scheduleSummary,
+  whatsappHref,
+} from '@/lib/contact'
 
 export function Footer() {
-  const mapsHref = 'https://maps.google.com/?q=Carretera+de+Alicun+28,+Pl.+Archivo+de+Indias,+4,+04740+Roquetas+de+Mar,+Almeria'
-  const phoneHref = 'tel:+34672804286'
-  const emailHref = 'mailto:alessandra.maggi@remax.es'
-  const whatsappHref = 'https://wa.me/34672804286'
 
   return (
     <footer className="bg-stone-100 text-stone-700 mt-24 border-t border-stone-200">
@@ -35,14 +39,14 @@ export function Footer() {
                   rel="noopener noreferrer"
                   className="hover:text-stone-900 transition-colors"
                 >
-                  Carretera de Alicún 28, Pl. Archivo de Indias, 4, 04740 Roquetas de Mar, Almería
+                  {CONTACT.address.full}
                 </a>
               </li>
               <li>
-                <a href={phoneHref} className="hover:text-stone-900 transition-colors">672 80 42 86</a>
+                <a href={phoneHref} className="hover:text-stone-900 transition-colors">{CONTACT.phone.display}</a>
               </li>
               <li>
-                <a href={emailHref} className="hover:text-stone-900 transition-colors">alessandra.maggi@remax.es</a>
+                <a href={emailHref} className="hover:text-stone-900 transition-colors">{CONTACT.email}</a>
               </li>
               <li>
                 <a
@@ -51,9 +55,10 @@ export function Footer() {
                   rel="noopener noreferrer"
                   className="hover:text-stone-900 transition-colors"
                 >
-                  WhatsApp: +34 672 80 42 86
+                  WhatsApp: +34 {CONTACT.phone.display}
                 </a>
               </li>
+              <li className="text-stone-600">{scheduleSummary}</li>
             </ul>
           </div>
         </div>

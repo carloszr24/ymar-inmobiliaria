@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { CONTACT, phoneHref, whatsappHref } from '@/lib/contact'
 import { createPublicSupabase } from '@/lib/supabase/public-server'
 import { rowToProperty, type PropertyRow } from '@/lib/property-db'
 import { formatPrice, OPERATION_LABELS, parseImages, STATUS_LABELS, TYPE_LABELS } from '@/lib/utils'
@@ -41,7 +42,7 @@ export default async function PropertyDetailPage({
     elevatorLabel === 'true'
   const showFloorCard = Boolean(floorLabel || hasElevator)
   const whatsappText = `Hola! Me gustaría solicitar información sobre ${property.title}`
-  const whatsappUrl = `https://wa.me/34672804286?text=${encodeURIComponent(whatsappText)}`
+  const whatsappUrl = `${whatsappHref}?text=${encodeURIComponent(whatsappText)}`
   const featureItems = [
     { label: 'Tipo de inmueble', value: TYPE_LABELS[property.type] || property.type },
     { label: 'Disponibilidad', value: property.availability },
@@ -195,10 +196,10 @@ export default async function PropertyDetailPage({
                   </a>
                 )}
                 <a
-                  href="tel:+34672804286"
+                  href={phoneHref}
                   className="block text-center text-sm text-stone-500 hover:text-stone-900 transition-colors py-2"
                 >
-                  📞 +34 672 80 42 86
+                  📞 +34 {CONTACT.phone.display}
                 </a>
               </div>
             </div>

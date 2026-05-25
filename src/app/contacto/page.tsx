@@ -1,20 +1,21 @@
 'use client'
 
 import { useState } from 'react'
+import {
+  CONTACT,
+  emailHref,
+  mapsHref,
+  OPENING_HOURS,
+  phoneHref,
+  whatsappDisplay,
+  whatsappHref,
+} from '@/lib/contact'
 
 export default function ContactoPage() {
   const [form, setForm] = useState({ nombre: '', email: '', telefono: '', mensaje: '' })
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-
-  const mapsHref = 'https://maps.google.com/?q=Carretera+de+Alicun+28,+Pl.+Archivo+de+Indias,+4,+04740+Roquetas+de+Mar,+Almeria'
-  const phoneDisplay = '672 80 42 86'
-  const phoneHref = 'tel:+34672804286'
-  const email = 'alessandra.maggi@remax.es'
-  const emailHref = `mailto:${email}`
-  const whatsappDisplay = '+34 672 80 42 86'
-  const whatsappHref = 'https://wa.me/34672804286'
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -169,9 +170,9 @@ export default function ContactoPage() {
                       rel="noopener noreferrer"
                       className="text-stone-700 text-sm whitespace-pre-line hover:text-stone-900 transition-colors"
                     >
-                      Carretera de Alicún 28, Pl. Archivo de Indias, 4
+                      {CONTACT.address.line1}
                       <br />
-                      04740 Roquetas de Mar, Almería
+                      {CONTACT.address.line2}
                     </a>
                   </div>
                 </div>
@@ -181,7 +182,7 @@ export default function ContactoPage() {
                   <div>
                     <p className="text-xs text-stone-400 tracking-wide mb-1">Teléfono</p>
                     <a href={phoneHref} className="text-stone-700 text-sm hover:text-stone-900 transition-colors">
-                      {phoneDisplay}
+                      {CONTACT.phone.display}
                     </a>
                   </div>
                 </div>
@@ -191,7 +192,7 @@ export default function ContactoPage() {
                   <div>
                     <p className="text-xs text-stone-400 tracking-wide mb-1">Email</p>
                     <a href={emailHref} className="text-stone-700 text-sm hover:text-stone-900 transition-colors break-all">
-                      {email}
+                      {CONTACT.email}
                     </a>
                   </div>
                 </div>
@@ -219,8 +220,14 @@ export default function ContactoPage() {
                   <span className="text-xl shrink-0">🕐</span>
                   <div>
                     <p className="text-xs text-stone-400 tracking-wide mb-1">Horario</p>
-                    <p className="text-stone-700 text-sm whitespace-pre-line">Lun–Vie: 9:30–14:00 · 17:00–20:00
-Sáb–Dom: Cerrado</p>
+                    <dl className="text-stone-700 text-sm space-y-1">
+                      {OPENING_HOURS.map(({ day, hours }) => (
+                        <div key={day} className="flex justify-between gap-6 max-w-xs">
+                          <dt className="text-stone-500">{day}</dt>
+                          <dd>{hours}</dd>
+                        </div>
+                      ))}
+                    </dl>
                   </div>
                 </div>
               </div>
