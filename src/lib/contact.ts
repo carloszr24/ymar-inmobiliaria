@@ -1,3 +1,11 @@
+export const AGENT = {
+  name: 'Ino Estrella',
+  title: 'Agente inmobiliario RE/MAX',
+  tagline: 'Asesoramiento personalizado para compra, venta e inversión en Almería y Roquetas de Mar.',
+  remaxProfileUrl:
+    'https://www.remax.es/buscador-de-agentes/almeria/roquetas-de-mar/todos/ino-estrella-13761/',
+} as const
+
 export const CONTACT = {
   address: {
     line1: 'Ctra. de Alicun, 28',

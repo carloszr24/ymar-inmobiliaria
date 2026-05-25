@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import {
+  AGENT,
   CONTACT,
   emailHref,
   mapsHref,
@@ -15,10 +16,9 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="md:col-span-2">
-            <p className="font-display text-2xl text-stone-900">Alessandra Maggi</p>
+            <p className="font-display text-2xl text-stone-900">{AGENT.name}</p>
             <p className="mt-4 text-sm leading-relaxed text-stone-600 max-w-sm">
-              Agente inmobiliaria en Almería. Asesoramiento personalizado para compra, venta e
-              inversión en Roquetas de Mar y alrededores.
+              {AGENT.title} en Almería. {AGENT.tagline}
             </p>
           </div>
           <div>
@@ -63,7 +63,7 @@ export function Footer() {
           </div>
         </div>
         <div className="border-t border-stone-200 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-stone-500">
-          <span>© {new Date().getFullYear()} Alessandra Maggi. Todos los derechos reservados.</span>
+          <span>© {new Date().getFullYear()} {AGENT.name}. Todos los derechos reservados.</span>
           <Link href="/admin" className="hover:text-stone-900 transition-colors">Panel Admin</Link>
         </div>
       </div>

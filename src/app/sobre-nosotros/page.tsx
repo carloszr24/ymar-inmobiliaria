@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { AGENT } from '@/lib/contact'
 
 const services = [
   {
@@ -89,8 +90,8 @@ export default function SobreNosotrosPage() {
             <div className="flex flex-col justify-between h-full">
               <div>
                 <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">El equipo</p>
-                <h2 className="section-title mb-2">Ino Estrella</h2>
-                <p className="text-stone-500 text-base md:text-lg font-medium mb-8">Agente asociado RE/MAX en Almería</p>
+                <h2 className="section-title mb-2">{AGENT.name}</h2>
+                <p className="text-stone-500 text-base md:text-lg font-medium mb-8">{AGENT.title} en Almería</p>
 
                 <div className="space-y-6 text-stone-600 text-lg leading-relaxed mb-10">
                   <p>
@@ -115,7 +116,7 @@ export default function SobreNosotrosPage() {
                 {/* RE/MAX badge */}
                 <div className="mt-6">
                   <a
-                    href="https://www.remax.es/buscador-de-agentes/almeria/roquetas-de-mar/todos/ino-estrella-13761/"
+                    href={AGENT.remaxProfileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -136,7 +137,7 @@ export default function SobreNosotrosPage() {
               <div className="relative aspect-[3/4] overflow-hidden">
                 <Image
                   src="/images/ino-estrella.png"
-                  alt="Ino Estrella, agente inmobiliario en Almería"
+                  alt={`${AGENT.name}, agente inmobiliario en Almería`}
                   fill
                   sizes="(max-width: 1024px) 100vw, 680px"
                   className="object-cover object-top"

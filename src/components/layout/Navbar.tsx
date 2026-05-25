@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
+import { AGENT } from '@/lib/contact'
 import { cn } from '@/lib/utils'
 import { ValoracionGratuitaModal } from '@/components/home/ValoracionGratuitaModal'
 
@@ -25,7 +26,7 @@ export function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5">
             <span className="font-logo text-[1.5rem] md:text-[1.7rem] leading-none font-extrabold tracking-[-0.025em] text-stone-900">
-              Alessandra Maggi
+              {AGENT.name}
             </span>
           </Link>
 

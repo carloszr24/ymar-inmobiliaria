@@ -146,7 +146,7 @@ export default async function HomePage() {
             Cuéntame qué necesitas y prepararemos la mejor estrategia para ti.
           </p>
           <Link href="/contacto" className="btn-primary px-12 py-4 text-sm tracking-wide">
-            Hablar con Alessandra
+            Hablar con Ino
           </Link>
         </div>
       </section>

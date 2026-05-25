@@ -1,65 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-
-type Review = {
-  id: number
-  name: string
-  text: string
-}
-
-const REVIEWS: Review[] = [
-  {
-    id: 1,
-    name: 'Olga Albert',
-    text: 'Desde el primer momento supe que estaba en buenas manos. Muy competente, ágil y eficaz, siempre disponible para cualquier duda durante la compra.',
-  },
-  {
-    id: 2,
-    name: 'Maite G.v',
-    text: 'Mi experiencia ha sido excelente. He contado con Alessandra para la compra y la venta de vivienda, y en ambas ocasiones fue excepcional.',
-  },
-  {
-    id: 3,
-    name: 'Pasquale',
-    text: 'Muy profesional y muy competente. Nos acompañó durante todo el proceso de venta, siempre disponible y con actitud cooperativa.',
-  },
-  {
-    id: 4,
-    name: 'Joel Medina Castro',
-    text: 'Me asesoró desde el minuto 0 y me gestionó todo a la perfección. Compré con ella y años después también me volvió a vender la vivienda.',
-  },
-  {
-    id: 5,
-    name: 'Jose Salmeron',
-    text: 'Muy contento con su trabajo: atención, amabilidad, persistencia y muy buena comunicación. Una gran profesional.',
-  },
-  {
-    id: 6,
-    name: 'Kamil Zygma',
-    text: 'Desde el primer contacto hasta la postcompra, todo genial. Te acompaña en cada paso y responde siempre a tus preguntas.',
-  },
-  {
-    id: 7,
-    name: 'Sole Moya Moya',
-    text: 'Una gran profesional. Se encargó de todos los aspectos de la venta, desde anuncios con fotos y vídeos hasta trámites administrativos.',
-  },
-  {
-    id: 8,
-    name: 'Anthony Costa',
-    text: 'Tras la primera reunión supimos que queríamos que ella vendiera nuestro apartamento. Muy profesional, con plan claro y excelentes ideas.',
-  },
-  {
-    id: 9,
-    name: 'Davide Scalici',
-    text: 'Excelente profesional: honesta, directa y muy atenta con sus clientes. Excepcional tanto a nivel profesional como humano.',
-  },
-  {
-    id: 10,
-    name: 'TOMASZ KUZAWIŃSKI',
-    text: 'Muy buena ayuda y profesionalidad. Si quieres comprar o vender un piso, recomiendo trabajar con Alessandra.',
-  },
-]
+import { REVIEWS } from '@/data/reviews'
 
 function StarRow() {
   return (

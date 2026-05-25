@@ -21,9 +21,9 @@ const logo = Montserrat({
 })
 
 export const metadata: Metadata = {
-  title: 'Alessandra Maggi | Agente inmobiliaria en Almería',
+  title: 'Ino Estrella | Agente inmobiliario RE/MAX en Almería',
   description: 'Servicio inmobiliario personalizado en Almería y Roquetas de Mar para compra, venta e inversión.',
-  keywords: 'alessandra maggi, agente inmobiliaria, almería, roquetas de mar, pisos, casas, venta, compra',
+  keywords: 'ino estrella, agente inmobiliario, remax, almería, roquetas de mar, pisos, casas, venta, compra',
 }
 
 export default function RootLayout({
