@@ -71,7 +71,7 @@ export default async function PropertyDetailPage({
   ].filter((item) => item.value)
 
   return (
-    <div className="pt-16">
+    <div className="pt-24 md:pt-28">
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-6 md:px-10 pt-8 pb-4">
         <nav className="flex items-center gap-2 text-xs text-stone-400">

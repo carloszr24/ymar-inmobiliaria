@@ -87,7 +87,7 @@ export default function ContactoPage() {
   }
 
   return (
-    <div className="pt-16">
+    <div className="pt-24 md:pt-28">
       {/* Header */}
       <div className="bg-stone-950 text-white py-20 px-6 md:px-10">
         <div className="max-w-7xl mx-auto">

@@ -122,7 +122,7 @@ const services = [
 
 export default function SobreNosotrosPage() {
   return (
-    <div className="pt-16">
+    <div className="pt-24 md:pt-28">
       <section className="bg-stone-950 text-white py-20 px-6 md:px-10">
         <div className="max-w-7xl mx-auto">
           <p className="text-brand-red text-xs tracking-[0.3em] uppercase mb-4">Quiénes somos</p>

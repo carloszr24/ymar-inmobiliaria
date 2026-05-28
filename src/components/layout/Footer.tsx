@@ -22,9 +22,9 @@ export function Footer() {
             <Image
               src={SITE.logo}
               alt={`${SITE.name} logo`}
-              width={220}
-              height={58}
-              className="h-12 w-auto"
+              width={360}
+              height={96}
+              className="h-16 w-auto md:h-20"
             />
             <p className="mt-4 text-sm leading-relaxed text-stone-300 max-w-sm">
               {AGENT.tagline}

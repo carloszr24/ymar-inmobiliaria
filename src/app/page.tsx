@@ -41,7 +41,7 @@ export default async function HomePage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative min-h-svh pt-24 pb-28 md:pt-28 md:pb-28 flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-svh pt-28 pb-28 md:pt-36 md:pb-28 flex items-center justify-center overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0">
           <HeroImageCarousel />
