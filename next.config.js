@@ -5,12 +5,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: '*.cloudinary.com' },
       { protocol: 'https', hostname: '*.imgbb.com' },
-      // Supabase Storage public URLs
-      { protocol: 'https', hostname: '*.supabase.co' },
     ],
-  },
-  experimental: {
-    serverComponentsExternalPackages: ['@supabase/supabase-js'],
   },
 }
 
