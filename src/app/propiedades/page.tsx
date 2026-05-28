@@ -1,10 +1,7 @@
 import { Suspense } from 'react'
-import { createPublicSupabase } from '@/lib/supabase/public-server'
-import { rowsToProperties, type PropertyRow } from '@/lib/property-db'
+import { filterProperties, getAllProperties } from '@/lib/properties-store'
 import { PropertyCard } from '@/components/properties/PropertyCard'
 import { PropertyFilters } from '@/components/properties/PropertyFilters'
-
-export const dynamic = 'force-dynamic'
 
 interface SearchParams {
   type?: string
@@ -15,64 +12,36 @@ interface SearchParams {
   extra?: string
 }
 
-function hasExtra(value?: string | null): boolean {
-  if (!value) return false
-  const normalized = value.trim().toLowerCase()
-  if (!normalized) return false
-  return normalized === 'si' || normalized === 'sí' || normalized === 'true' || normalized.startsWith('con ')
-}
-
-async function getProperties(searchParams: SearchParams) {
-  const supabase = createPublicSupabase()
-  let q = supabase.from('properties').select('*').order('created_at', { ascending: false })
-
-  if (searchParams.type) q = q.eq('type', searchParams.type)
-  if (searchParams.operation) q = q.eq('operation', searchParams.operation)
-  if (searchParams.status) q = q.eq('status', searchParams.status)
-  if (searchParams.minPrice) q = q.gte('price', parseFloat(searchParams.minPrice))
-  if (searchParams.maxPrice) q = q.lte('price', parseFloat(searchParams.maxPrice))
-
-  const { data, error } = await q
-  if (error) throw error
-  const properties = rowsToProperties(data as PropertyRow[] | null)
-
-  if (!searchParams.extra) return properties
-
-  return properties.filter((property) => {
-    switch (searchParams.extra) {
-      case 'garage':
-        return hasExtra(property.garage)
-      case 'elevator':
-        return hasExtra(property.elevator)
-      case 'furnished':
-        return hasExtra(property.furnished)
-      case 'heating':
-        return hasExtra(property.heating)
-      default:
-        return true
-    }
-  })
-}
-
-export default async function PropiedadesPage({
+export default function PropiedadesPage({
   searchParams,
 }: {
   searchParams: SearchParams
 }) {
-  const properties = await getProperties(searchParams)
+  const properties = filterProperties(getAllProperties(), searchParams)
 
   return (
     <div className="pt-16">
+      <div className="border-b border-stone-100">
+        <div className="max-w-7xl mx-auto px-6 md:px-10 py-10">
+          <h1 className="font-display text-4xl font-semibold text-stone-900">Propiedades</h1>
+          <p className="mt-2 text-sm text-stone-500">
+            {properties.length} inmueble{properties.length !== 1 ? 's' : ''} disponible
+            {properties.length !== 1 ? 's' : ''}
+          </p>
+        </div>
+      </div>
+
       <Suspense fallback={<div className="skeleton h-40 w-full" />}>
         <PropertyFilters />
       </Suspense>
 
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-14">
         {properties.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-stone-400 text-lg mb-4">No hay propiedades con estos filtros.</p>
-            <a href="/propiedades" className="text-gold text-sm hover:underline">
-              Ver todas las propiedades →
+          <div className="border border-dashed border-stone-200 py-32 text-center">
+            <p className="mb-2 text-lg text-stone-400">Sin resultados</p>
+            <p className="mb-6 text-sm text-stone-400">Prueba ajustando los filtros o explora todo el catálogo</p>
+            <a href="/propiedades" className="btn-primary px-8 py-3 text-sm">
+              Ver todas las propiedades
             </a>
           </div>
         ) : (

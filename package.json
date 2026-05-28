@@ -7,14 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:seed": "node --env-file=.env scripts/seed-supabase.mjs"
+    "db:seed": "node --env-file=.env scripts/seed-supabase.mjs",
+    "test:docx": "node scripts/test_temas.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
+    "clsx": "^2.1.1",
     "next": "^14.2.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "clsx": "^2.1.1",
     "tailwind-merge": "^2.5.2"
   },
   "devDependencies": {
@@ -22,6 +23,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.20",
+    "docx": "^9.7.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",
     "typescript": "^5.6.3"

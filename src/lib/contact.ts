@@ -1,40 +1,36 @@
+import { SITE, formatOpeningHours } from '@/lib/site'
+
+/** Compatibilidad con componentes que importan AGENT / CONTACT */
 export const AGENT = {
-  name: 'Ino Estrella',
-  title: 'Agente inmobiliario RE/MAX',
-  tagline: 'Asesoramiento personalizado para compra, venta e inversión en Almería y Roquetas de Mar.',
-  remaxProfileUrl:
-    'https://www.remax.es/buscador-de-agentes/almeria/roquetas-de-mar/todos/ino-estrella-13761/',
+  name: SITE.name,
+  title: 'Inmobiliaria',
+  tagline: SITE.tagline,
 } as const
 
 export const CONTACT = {
   address: {
-    line1: 'Ctra. de Alicun, 28',
-    line2: '04740 Roquetas de Mar, Almería',
-    full: 'Ctra. de Alicun, 28, 04740 Roquetas de Mar, Almería',
-    mapsQuery: 'Ctra.+de+Alicun,+28,+04740+Roquetas+de+Mar,+Almeria',
+    line1: SITE.address.line1,
+    line2: SITE.address.line2,
+    full: SITE.address.full,
+    mapsQuery: SITE.address.full,
   },
   phone: {
-    display: '664 65 37 25',
-    e164: '+34664653725',
-    wa: '34664653725',
+    display: SITE.phone.display,
+    e164: SITE.phone.href.replace('tel:', ''),
+    wa: SITE.phone.whatsappHref.replace('https://wa.me/', ''),
   },
-  email: 'ino.estrella@remax.es',
+  email: '',
 } as const
 
-export const OPENING_HOURS = [
-  { day: 'Lunes', hours: '9:00–21:00' },
-  { day: 'Martes', hours: '9:00–21:00' },
-  { day: 'Miércoles', hours: '9:00–21:00' },
-  { day: 'Jueves', hours: '9:00–21:00' },
-  { day: 'Viernes', hours: '9:00–21:00' },
-  { day: 'Sábado', hours: '9:00–14:00' },
-  { day: 'Domingo', hours: 'Cerrado' },
-] as const
+export const OPENING_HOURS = SITE.openingHours.map(({ label, hours }) => ({
+  day: label,
+  hours,
+})) as ReadonlyArray<{ day: string; hours: string }>
 
-export const mapsHref = `https://maps.google.com/?q=${CONTACT.address.mapsQuery}`
-export const phoneHref = `tel:${CONTACT.phone.e164}`
-export const whatsappHref = `https://wa.me/${CONTACT.phone.wa}`
-export const emailHref = `mailto:${CONTACT.email}`
-export const whatsappDisplay = `+34 ${CONTACT.phone.display}`
-
-export const scheduleSummary = 'Lun–Vie: 9:00–21:00 · Sáb: 9:00–14:00 · Dom: Cerrado'
+export const mapsHref = SITE.mapsHref
+export const phoneHref = SITE.phone.href
+export const whatsappHref = SITE.phone.whatsappHref
+export const hasEmail = CONTACT.email.trim().length > 0
+export const emailHref = hasEmail ? `mailto:${CONTACT.email}` : ''
+export const whatsappDisplay = `+34 ${SITE.phone.display}`
+export const scheduleSummary = formatOpeningHours().replace(/\n/g, ' · ')

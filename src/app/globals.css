@@ -3,12 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --brand-blue: #0057ff;
-  --brand-blue-light: #3d7dff;
-  --brand-blue-dark: #003eb8;
-  --brand-red: #c8102e;
-  --brand-red-light: #e13a53;
-  --brand-red-dark: #9c0e24;
+  --brand-red: #e52322;
+  --brand-red-light: #ef4a49;
+  --brand-red-dark: #b81c1b;
   --brand-white: #ffffff;
   /* Backward-compatible token used throughout existing components */
   --gold: var(--brand-red);

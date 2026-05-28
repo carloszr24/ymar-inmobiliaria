@@ -4,12 +4,48 @@ import { useState } from 'react'
 import {
   CONTACT,
   emailHref,
+  hasEmail,
   mapsHref,
   OPENING_HOURS,
   phoneHref,
   whatsappDisplay,
   whatsappHref,
 } from '@/lib/contact'
+
+function MapPinIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5" aria-hidden="true">
+      <path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  )
+}
+
+function PhoneIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5" aria-hidden="true">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.87 19.87 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.87 19.87 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.35 1.77.68 2.6a2 2 0 0 1-.45 2.11L8.1 9.91a16 16 0 0 0 6 6l1.48-1.24a2 2 0 0 1 2.11-.45c.83.33 1.7.56 2.6.68A2 2 0 0 1 22 16.92Z" />
+    </svg>
+  )
+}
+
+function MailIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5" aria-hidden="true">
+      <path d="M4 6h16v12H4z" />
+      <path d="m4 7 8 6 8-6" />
+    </svg>
+  )
+}
+
+function ClockIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </svg>
+  )
+}
 
 export default function ContactoPage() {
   const [form, setForm] = useState({ nombre: '', email: '', telefono: '', mensaje: '' })
@@ -58,7 +94,7 @@ export default function ContactoPage() {
           <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">Estamos aquí</p>
           <h1 className="font-display text-5xl md:text-6xl font-light">Contacto</h1>
           <p className="text-stone-400 mt-4 text-lg font-light max-w-md">
-            Escríbeme o llámame. Te respondo en menos de 24 horas.
+            Escríbenos o llámanos. Te respondemos en menos de 24 horas.
           </p>
         </div>
       </div>
@@ -94,7 +130,7 @@ export default function ContactoPage() {
                       onChange={handleChange}
                       required
                       placeholder="Tu nombre"
-                      className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-stone-900 transition-colors"
+                      className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-red transition-colors"
                     />
                   </div>
                   <div>
@@ -106,7 +142,7 @@ export default function ContactoPage() {
                       onChange={handleChange}
                       required
                       placeholder="tu@email.com"
-                      className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-stone-900 transition-colors"
+                      className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-red transition-colors"
                     />
                   </div>
                 </div>
@@ -118,7 +154,7 @@ export default function ContactoPage() {
                     value={form.telefono}
                     onChange={handleChange}
                     placeholder="+34 600 000 000"
-                    className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-stone-900 transition-colors"
+                    className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-red transition-colors"
                   />
                 </div>
 
@@ -131,7 +167,7 @@ export default function ContactoPage() {
                     required
                     rows={6}
                     placeholder="Cuéntanos qué necesitas..."
-                    className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-stone-900 transition-colors resize-none"
+                    className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-red transition-colors resize-none"
                   />
                 </div>
 
@@ -161,7 +197,7 @@ export default function ContactoPage() {
               <h2 className="font-display text-3xl font-light text-stone-900 mb-8">Información</h2>
               <div className="space-y-6">
                 <div className="flex gap-4">
-                  <span className="text-xl shrink-0">📍</span>
+                  <span className="shrink-0 text-stone-500"><MapPinIcon /></span>
                   <div>
                     <p className="text-xs text-stone-400 tracking-wide mb-1">Dirección</p>
                     <a
@@ -178,7 +214,7 @@ export default function ContactoPage() {
                 </div>
 
                 <div className="flex gap-4">
-                  <span className="text-xl shrink-0">📞</span>
+                  <span className="shrink-0 text-stone-500"><PhoneIcon /></span>
                   <div>
                     <p className="text-xs text-stone-400 tracking-wide mb-1">Teléfono</p>
                     <a href={phoneHref} className="text-stone-700 text-sm hover:text-stone-900 transition-colors">
@@ -187,15 +223,17 @@ export default function ContactoPage() {
                   </div>
                 </div>
 
-                <div className="flex gap-4">
-                  <span className="text-xl shrink-0">✉️</span>
-                  <div>
-                    <p className="text-xs text-stone-400 tracking-wide mb-1">Email</p>
-                    <a href={emailHref} className="text-stone-700 text-sm hover:text-stone-900 transition-colors break-all">
-                      {CONTACT.email}
-                    </a>
+                {hasEmail && (
+                  <div className="flex gap-4">
+                    <span className="shrink-0 text-stone-500"><MailIcon /></span>
+                    <div>
+                      <p className="text-xs text-stone-400 tracking-wide mb-1">Email</p>
+                      <a href={emailHref} className="text-stone-700 text-sm hover:text-stone-900 transition-colors break-all">
+                        {CONTACT.email}
+                      </a>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div className="flex gap-4">
                   <span className="shrink-0 mt-0.5 text-[#25D366]" aria-hidden="true">
@@ -217,7 +255,7 @@ export default function ContactoPage() {
                 </div>
 
                 <div className="flex gap-4">
-                  <span className="text-xl shrink-0">🕐</span>
+                  <span className="shrink-0 text-stone-500"><ClockIcon /></span>
                   <div>
                     <p className="text-xs text-stone-400 tracking-wide mb-1">Horario</p>
                     <dl className="text-stone-700 text-sm space-y-1">
@@ -233,14 +271,14 @@ export default function ContactoPage() {
               </div>
             </div>
 
-            {/* Social */}
+            {/* Other channels */}
             <div className="border-t border-stone-100 pt-8">
-              <p className="text-xs text-stone-400 tracking-widest uppercase mb-4">Redes sociales</p>
+              <p className="text-xs text-stone-400 tracking-widest uppercase mb-4">Otros canales</p>
               <div className="flex gap-4">
                 {[
                   { name: 'WhatsApp', href: whatsappHref },
                   { name: 'Google Maps', href: mapsHref },
-                  { name: 'Email', href: emailHref },
+                  ...(hasEmail ? [{ name: 'Email', href: emailHref }] : []),
                 ].map((social) => (
                   <a
                     key={social.name}

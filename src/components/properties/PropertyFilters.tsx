@@ -1,12 +1,11 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { PROPERTY_TYPES, PROPERTY_OPERATIONS, PROPERTY_STATUSES, OPERATION_LABELS, STATUS_LABELS, TYPE_LABELS } from '@/lib/utils'
 
 const PRICE_MIN = 0
 const PRICE_MAX = 1000000
-const PRICE_STEP = 10000
 
 const EXTRA_OPTIONS = [
   { value: 'garage', label: 'Garaje' },
@@ -26,6 +25,7 @@ function formatEuro(value: number): string {
 export function PropertyFilters() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   const type = searchParams.get('type') || ''
   const operation = searchParams.get('operation') || ''
@@ -33,8 +33,8 @@ export function PropertyFilters() {
   const extra = searchParams.get('extra') || ''
   const minPrice = searchParams.get('minPrice') || ''
   const maxPrice = searchParams.get('maxPrice') || ''
-  const minPriceValue = minPrice ? Number(minPrice) : PRICE_MIN
-  const maxPriceValue = maxPrice ? Number(maxPrice) : PRICE_MAX
+  const minPriceValue = minPrice ? Number(minPrice) : ''
+  const maxPriceValue = maxPrice ? Number(maxPrice) : ''
 
   const updateParam = useCallback((key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -48,6 +48,7 @@ export function PropertyFilters() {
 
   const clearAll = () => {
     router.push('/propiedades')
+    setMobileOpen(false)
   }
 
   const hasFilters = type || operation || status || extra || minPrice || maxPrice
@@ -56,6 +57,13 @@ export function PropertyFilters() {
     <div className="bg-white border-b border-stone-100">
       <div className="max-w-7xl mx-auto px-6 md:px-10">
         <div className="flex items-center justify-end py-2.5">
+          <button
+            type="button"
+            onClick={() => setMobileOpen((v) => !v)}
+            className="mr-auto md:hidden inline-flex items-center rounded-md border border-stone-200 px-4 py-2 text-sm text-stone-700"
+          >
+            {mobileOpen ? 'Cerrar filtros' : 'Filtros'}
+          </button>
           {hasFilters && (
             <button onClick={clearAll} className="text-sm text-gold hover:text-gold-dark transition-colors">
               Limpiar
@@ -63,7 +71,7 @@ export function PropertyFilters() {
           )}
         </div>
 
-        <div className="py-3 md:py-4">
+        <div className={`${mobileOpen ? 'block' : 'hidden'} md:block py-3 md:py-4`}>
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6 xl:items-end">
               {/* Tipo */}
               <div>
@@ -118,46 +126,36 @@ export function PropertyFilters() {
 
               {/* Precio mínimo */}
               <div>
-                <label className="text-xs text-stone-500 mb-1.5 block">
-                  Precio mínimo ({formatEuro(minPriceValue)})
-                </label>
-                <input
-                  type="range"
-                  min={PRICE_MIN}
-                  max={PRICE_MAX}
-                  step={PRICE_STEP}
-                  value={Math.min(minPriceValue, maxPriceValue)}
-                  onChange={(e) => {
-                    const next = Number(e.target.value)
-                    updateParam('minPrice', String(next))
-                    if (next > maxPriceValue) {
-                      updateParam('maxPrice', String(next))
-                    }
-                  }}
-                  className="w-full accent-stone-900 h-5"
-                />
+                <label className="text-xs text-stone-500 mb-1.5 block">Precio mínimo</label>
+                <div className="relative">
+                  <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-stone-400">€</span>
+                  <input
+                    type="number"
+                    min={PRICE_MIN}
+                    max={PRICE_MAX}
+                    value={minPriceValue}
+                    onChange={(e) => updateParam('minPrice', e.target.value)}
+                    className="w-full bg-white border border-stone-200 rounded-full pl-7 pr-4 py-2.5 text-sm text-stone-900 focus:outline-none focus:border-stone-400"
+                    placeholder={formatEuro(PRICE_MIN)}
+                  />
+                </div>
               </div>
 
               {/* Precio máximo */}
               <div>
-                <label className="text-xs text-stone-500 mb-1.5 block">
-                  Precio máximo ({formatEuro(maxPriceValue)})
-                </label>
-                <input
-                  type="range"
-                  min={PRICE_MIN}
-                  max={PRICE_MAX}
-                  step={PRICE_STEP}
-                  value={Math.max(maxPriceValue, minPriceValue)}
-                  onChange={(e) => {
-                    const next = Number(e.target.value)
-                    updateParam('maxPrice', String(next))
-                    if (next < minPriceValue) {
-                      updateParam('minPrice', String(next))
-                    }
-                  }}
-                  className="w-full accent-stone-900 h-5"
-                />
+                <label className="text-xs text-stone-500 mb-1.5 block">Precio máximo</label>
+                <div className="relative">
+                  <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-stone-400">€</span>
+                  <input
+                    type="number"
+                    min={PRICE_MIN}
+                    max={PRICE_MAX}
+                    value={maxPriceValue}
+                    onChange={(e) => updateParam('maxPrice', e.target.value)}
+                    className="w-full bg-white border border-stone-200 rounded-full pl-7 pr-4 py-2.5 text-sm text-stone-900 focus:outline-none focus:border-stone-400"
+                    placeholder={formatEuro(PRICE_MAX)}
+                  />
+                </div>
               </div>
 
               {/* Extras */}

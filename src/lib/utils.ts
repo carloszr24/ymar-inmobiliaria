@@ -6,6 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatPrice(price: number, operation?: string): string {
+  if (!price || price <= 0) return 'Consultar precio'
   const base = new Intl.NumberFormat('es-ES', {
     style: 'currency',
     currency: 'EUR',
