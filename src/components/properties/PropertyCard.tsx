@@ -55,6 +55,14 @@ export function PropertyCard({ property, variant = 'default' }: PropertyCardProp
           )}
         </div>
 
+        {!isFeaturedMinimal && (
+          <div className="md:hidden border-b border-stone-100 px-4 py-3">
+            <span className="font-display text-2xl font-medium text-stone-900">
+              {formatPrice(property.price, property.operation)}
+            </span>
+          </div>
+        )}
+
         {/* Content */}
         <div className={cn('p-6', isFeaturedMinimal && 'p-4')}>
           <div className={cn('flex items-start justify-between gap-4', isFeaturedMinimal ? 'mb-4' : 'mb-3')}>
@@ -92,8 +100,13 @@ export function PropertyCard({ property, variant = 'default' }: PropertyCardProp
           )}
 
           {/* Price */}
-          <div className={cn('flex items-center justify-between', isFeaturedMinimal && 'pt-0')}>
-            <span className={cn('font-display font-medium text-stone-900', isFeaturedMinimal ? 'text-2xl' : 'text-2xl')}>
+          <div
+            className={cn(
+              'flex items-center justify-between',
+              isFeaturedMinimal ? 'pt-0' : 'hidden md:flex'
+            )}
+          >
+            <span className="font-display text-2xl font-medium text-stone-900">
               {formatPrice(property.price, property.operation)}
             </span>
             {!isFeaturedMinimal && (

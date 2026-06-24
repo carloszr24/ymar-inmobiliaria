@@ -7,45 +7,6 @@ function unauthorized() {
   return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 }
 
-async function sendLeadEmailNotification(payload: {
-  fullName: string
-  phone: string
-  email?: string
-  source: string
-  intent: string
-  notes?: string
-}) {
-  const apiKey = process.env.RESEND_API_KEY
-  const to = process.env.LEADS_NOTIFICATION_EMAIL
-  const from = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
-  if (!apiKey || !to) return
-
-  const text = [
-    'Nuevo lead recibido',
-    '',
-    `Nombre: ${payload.fullName}`,
-    `Telefono: ${payload.phone}`,
-    `Email: ${payload.email || 'No indicado'}`,
-    `Origen: ${payload.source}`,
-    `Interes: ${payload.intent}`,
-    `Notas: ${payload.notes || 'No indicado'}`,
-  ].join('\n')
-
-  await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from,
-      to: [to],
-      subject: `Nuevo lead: ${payload.fullName}`,
-      text,
-    }),
-  }).catch(() => null)
-}
-
 export async function GET(request: NextRequest) {
   if (!verifyAdminSessionToken(getAdminTokenFromRequest(request))) {
     return unauthorized()
@@ -111,15 +72,6 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) throw error
-
-    await sendLeadEmailNotification({
-      fullName,
-      phone,
-      email: email || undefined,
-      source,
-      intent,
-      notes: notes || undefined,
-    })
 
     return NextResponse.json(rowsToLeads([data as LeadRow])[0], { status: 201 })
   } catch {

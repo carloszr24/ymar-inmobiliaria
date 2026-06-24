@@ -1,15 +1,45 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import {
   CONTACT,
+  OFFICES,
   emailHref,
+  hasEmail,
+  landlineHref,
   mapsHref,
-  OPENING_HOURS,
   phoneHref,
+  secondaryMapsHref,
   whatsappDisplay,
   whatsappHref,
 } from '@/lib/contact'
+
+function MapPinIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5" aria-hidden="true">
+      <path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  )
+}
+
+function PhoneIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5" aria-hidden="true">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.87 19.87 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.87 19.87 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.35 1.77.68 2.6a2 2 0 0 1-.45 2.11L8.1 9.91a16 16 0 0 0 6 6l1.48-1.24a2 2 0 0 1 2.11-.45c.83.33 1.7.56 2.6.68A2 2 0 0 1 22 16.92Z" />
+    </svg>
+  )
+}
+
+function MailIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5" aria-hidden="true">
+      <path d="M4 6h16v12H4z" />
+      <path d="m4 7 8 6 8-6" />
+    </svg>
+  )
+}
 
 export default function ContactoPage() {
   const [form, setForm] = useState({ nombre: '', email: '', telefono: '', mensaje: '' })
@@ -51,21 +81,19 @@ export default function ContactoPage() {
   }
 
   return (
-    <div className="pt-16">
-      {/* Header */}
+    <div className="pt-24 md:pt-[8.5rem]">
       <div className="bg-stone-950 text-white py-20 px-6 md:px-10">
         <div className="max-w-7xl mx-auto">
-          <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">Estamos aquí</p>
-          <h1 className="font-display text-5xl md:text-6xl font-light">Contacto</h1>
+          <p className="text-gold text-xs tracking-[0.3em] uppercase mb-4">Contacto</p>
+          <h1 className="font-display text-5xl md:text-6xl font-light">Estamos aquí para ayudarte</h1>
           <p className="text-stone-400 mt-4 text-lg font-light max-w-md">
-            Escríbeme o llámame. Te respondo en menos de 24 horas.
+            Escríbenos o llámanos. Te responderemos en menos de 24 horas.
           </p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-16">
-          {/* Form */}
           <div className="lg:col-span-3">
             {sent ? (
               <div className="bg-emerald-50 border border-emerald-200 p-10 text-center">
@@ -83,7 +111,7 @@ export default function ContactoPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
-                <h2 className="font-display text-3xl font-light text-stone-900 mb-8">Envíame un mensaje</h2>
+                <h2 className="font-display text-3xl font-light text-stone-900 mb-8">Envíanos un mensaje</h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
@@ -94,7 +122,7 @@ export default function ContactoPage() {
                       onChange={handleChange}
                       required
                       placeholder="Tu nombre"
-                      className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-stone-900 transition-colors"
+                      className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-red transition-colors"
                     />
                   </div>
                   <div>
@@ -106,7 +134,7 @@ export default function ContactoPage() {
                       onChange={handleChange}
                       required
                       placeholder="tu@email.com"
-                      className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-stone-900 transition-colors"
+                      className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-red transition-colors"
                     />
                   </div>
                 </div>
@@ -118,7 +146,7 @@ export default function ContactoPage() {
                     value={form.telefono}
                     onChange={handleChange}
                     placeholder="+34 600 000 000"
-                    className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-stone-900 transition-colors"
+                    className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-red transition-colors"
                   />
                 </div>
 
@@ -131,7 +159,7 @@ export default function ContactoPage() {
                     required
                     rows={6}
                     placeholder="Cuéntanos qué necesitas..."
-                    className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-stone-900 transition-colors resize-none"
+                    className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-red transition-colors resize-none"
                   />
                 </div>
 
@@ -143,44 +171,28 @@ export default function ContactoPage() {
                   {loading ? 'Enviando...' : 'Enviar mensaje'}
                 </button>
                 {error && (
-                  <p className="text-xs text-red-600 text-center">
-                    {error}
-                  </p>
+                  <p className="text-xs text-red-600 text-center">{error}</p>
                 )}
 
                 <p className="text-xs text-stone-400 text-center">
-                  Al enviar aceptas nuestra política de privacidad.
+                  Al enviar aceptas nuestra{' '}
+                  <Link href="/aviso-legal" className="underline hover:text-stone-600">
+                    política de privacidad
+                  </Link>
+                  .
                 </p>
               </form>
             )}
           </div>
 
-          {/* Contact info */}
           <div className="lg:col-span-2 space-y-10">
             <div>
               <h2 className="font-display text-3xl font-light text-stone-900 mb-8">Información</h2>
               <div className="space-y-6">
                 <div className="flex gap-4">
-                  <span className="text-xl shrink-0">📍</span>
+                  <span className="shrink-0 text-stone-500"><PhoneIcon /></span>
                   <div>
-                    <p className="text-xs text-stone-400 tracking-wide mb-1">Dirección</p>
-                    <a
-                      href={mapsHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-stone-700 text-sm whitespace-pre-line hover:text-stone-900 transition-colors"
-                    >
-                      {CONTACT.address.line1}
-                      <br />
-                      {CONTACT.address.line2}
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <span className="text-xl shrink-0">📞</span>
-                  <div>
-                    <p className="text-xs text-stone-400 tracking-wide mb-1">Teléfono</p>
+                    <p className="text-xs text-stone-400 tracking-wide mb-1">{CONTACT.phone.label}</p>
                     <a href={phoneHref} className="text-stone-700 text-sm hover:text-stone-900 transition-colors">
                       {CONTACT.phone.display}
                     </a>
@@ -188,14 +200,26 @@ export default function ContactoPage() {
                 </div>
 
                 <div className="flex gap-4">
-                  <span className="text-xl shrink-0">✉️</span>
+                  <span className="shrink-0 text-stone-500"><PhoneIcon /></span>
                   <div>
-                    <p className="text-xs text-stone-400 tracking-wide mb-1">Email</p>
-                    <a href={emailHref} className="text-stone-700 text-sm hover:text-stone-900 transition-colors break-all">
-                      {CONTACT.email}
+                    <p className="text-xs text-stone-400 tracking-wide mb-1">{CONTACT.landline.label}</p>
+                    <a href={landlineHref} className="text-stone-700 text-sm hover:text-stone-900 transition-colors">
+                      {CONTACT.landline.display}
                     </a>
                   </div>
                 </div>
+
+                {hasEmail && (
+                  <div className="flex gap-4">
+                    <span className="shrink-0 text-stone-500"><MailIcon /></span>
+                    <div>
+                      <p className="text-xs text-stone-400 tracking-wide mb-1">Email</p>
+                      <a href={emailHref} className="text-stone-700 text-sm hover:text-stone-900 transition-colors break-all">
+                        {CONTACT.email}
+                      </a>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex gap-4">
                   <span className="shrink-0 mt-0.5 text-[#25D366]" aria-hidden="true">
@@ -217,30 +241,48 @@ export default function ContactoPage() {
                 </div>
 
                 <div className="flex gap-4">
-                  <span className="text-xl shrink-0">🕐</span>
+                  <span className="shrink-0 text-stone-500"><MapPinIcon /></span>
                   <div>
-                    <p className="text-xs text-stone-400 tracking-wide mb-1">Horario</p>
-                    <dl className="text-stone-700 text-sm space-y-1">
-                      {OPENING_HOURS.map(({ day, hours }) => (
-                        <div key={day} className="flex justify-between gap-6 max-w-xs">
-                          <dt className="text-stone-500">{day}</dt>
-                          <dd>{hours}</dd>
-                        </div>
-                      ))}
-                    </dl>
+                    <p className="text-xs text-stone-400 tracking-wide mb-1">{OFFICES.primary.label}</p>
+                    <a
+                      href={mapsHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-stone-700 text-sm hover:text-stone-900 transition-colors"
+                    >
+                      {OFFICES.primary.line1}
+                      <br />
+                      {OFFICES.primary.line2}
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <span className="shrink-0 text-stone-500"><MapPinIcon /></span>
+                  <div>
+                    <p className="text-xs text-stone-400 tracking-wide mb-1">{OFFICES.secondary.label}</p>
+                    <a
+                      href={secondaryMapsHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-stone-700 text-sm hover:text-stone-900 transition-colors"
+                    >
+                      {OFFICES.secondary.line1}
+                      <br />
+                      {OFFICES.secondary.line2}
+                    </a>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Social */}
             <div className="border-t border-stone-100 pt-8">
-              <p className="text-xs text-stone-400 tracking-widest uppercase mb-4">Redes sociales</p>
-              <div className="flex gap-4">
+              <p className="text-xs text-stone-400 tracking-widest uppercase mb-4">Otros canales</p>
+              <div className="flex flex-wrap gap-4">
                 {[
                   { name: 'WhatsApp', href: whatsappHref },
                   { name: 'Google Maps', href: mapsHref },
-                  { name: 'Email', href: emailHref },
+                  ...(hasEmail ? [{ name: 'Email', href: emailHref }] : []),
                 ].map((social) => (
                   <a
                     key={social.name}

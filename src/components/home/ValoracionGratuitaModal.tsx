@@ -51,6 +51,14 @@ const saleTimelineOptions = [
   'Solo quiero una orientación por ahora',
 ]
 
+const conditionOptions = [
+  'Totalmente reformado',
+  'Semirreformado',
+  'Reforma antigua',
+  'Para entrar a vivir',
+  'Para reformar',
+]
+
 type Props = {
   triggerClassName?: string
   triggerLabel?: string
@@ -186,7 +194,7 @@ export function ValoracionGratuitaModal({ triggerClassName = '', triggerLabel = 
               <div className="lead-modal-thanks">
                 <span className="lead-modal-thanks-icon" aria-hidden="true">✓</span>
                 <h3>Gracias por confiar en nosotros</h3>
-                <p>Le contactaremos para pasarle la valoración gratuita de su propiedad.</p>
+                <p>Te contactaremos para pasarte la valoración gratuita de tu propiedad.</p>
                 <button type="button" className="btn-primary lead-modal-submit" onClick={closeModal}>
                   Cerrar
                 </button>
@@ -196,7 +204,8 @@ export function ValoracionGratuitaModal({ triggerClassName = '', triggerLabel = 
                 <div className="lead-modal-hero">
                   <h3 className="lead-modal-title">¿Quieres saber cuánto vale tu casa?</h3>
                   <p className="lead-modal-subtitle">
-                    Complete los datos y le enviaremos una valoración orientativa de su inmueble sin compromiso.
+                    Completa los datos y te haremos una valoración completa de tu inmueble sin compromiso.
+                    Además, si vendes con nosotros te obsequiaremos el certificado energético obligatorio.
                   </p>
                 </div>
 
@@ -274,13 +283,18 @@ export function ValoracionGratuitaModal({ triggerClassName = '', triggerLabel = 
                         </label>
 
                         <label>
-                          Estado
-                          <input
-                            type="text"
-                            placeholder="Ej: Reformado..."
+                          Estado de la vivienda
+                          <select
                             value={form.condition}
                             onChange={(e) => setForm((prev) => ({ ...prev, condition: e.target.value }))}
-                          />
+                          >
+                            <option value="">Selecciona una opción</option>
+                            {conditionOptions.map((option) => (
+                              <option key={option} value={option}>
+                                {option}
+                              </option>
+                            ))}
+                          </select>
                         </label>
 
                         <label className="lead-modal-full">

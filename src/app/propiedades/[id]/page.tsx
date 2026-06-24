@@ -1,13 +1,23 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { CONTACT, phoneHref, whatsappHref } from '@/lib/contact'
-import { createPublicSupabase } from '@/lib/supabase/public-server'
-import { rowToProperty, type PropertyRow } from '@/lib/property-db'
+import { DEMO_PROPERTIES } from '@/data/properties'
+import { getPropertyById } from '@/lib/properties-store'
+
+export function generateStaticParams() {
+  return DEMO_PROPERTIES.map((p) => ({ id: p.id }))
+}
 import { formatPrice, OPERATION_LABELS, parseImages, STATUS_LABELS, TYPE_LABELS } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { PropertyImageViewer } from '@/components/properties/PropertyImageViewer'
 
-export const dynamic = 'force-dynamic'
+function PhoneIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4" aria-hidden="true">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.87 19.87 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.87 19.87 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.35 1.77.68 2.6a2 2 0 0 1-.45 2.11L8.1 9.91a16 16 0 0 0 6 6l1.48-1.24a2 2 0 0 1 2.11-.45c.83.33 1.7.56 2.6.68A2 2 0 0 1 22 16.92Z" />
+    </svg>
+  )
+}
 
 const statusColors: Record<string, string> = {
   disponible: 'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -20,17 +30,8 @@ export default async function PropertyDetailPage({
 }: {
   params: { id: string }
 }) {
-  const supabase = createPublicSupabase()
-  const { data, error } = await supabase
-    .from('properties')
-    .select('*')
-    .eq('id', params.id)
-    .maybeSingle()
-
-  if (error) throw error
-  if (!data) notFound()
-
-  const property = rowToProperty(data as PropertyRow)
+  const property = getPropertyById(params.id)
+  if (!property) notFound()
 
   const images = parseImages(property.images)
   const floorLabel = property.floor?.trim()
@@ -70,7 +71,7 @@ export default async function PropertyDetailPage({
   ].filter((item) => item.value)
 
   return (
-    <div className="pt-16">
+    <div className="pt-24 md:pt-[8.5rem]">
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-6 md:px-10 pt-8 pb-4">
         <nav className="flex items-center gap-2 text-xs text-stone-400">
@@ -87,6 +88,13 @@ export default async function PropertyDetailPage({
           {/* LEFT: Images + description */}
           <div className="lg:col-span-3">
             <PropertyImageViewer images={images} title={property.title} />
+
+            <div className="lg:hidden bg-stone-900 p-6 mb-6">
+              <p className="text-xs text-stone-400 tracking-widest uppercase mb-1">Precio</p>
+              <p className="font-display text-4xl font-light text-white">
+                {formatPrice(property.price, property.operation)}
+              </p>
+            </div>
 
             {/* Description */}
             <div className="mt-8">
@@ -132,14 +140,14 @@ export default async function PropertyDetailPage({
                 {property.title}
               </h1>
 
-              <p className="text-stone-500 text-sm mb-6 flex items-center gap-1">
-                📍 {property.location}
+              <p className="text-stone-500 text-sm mb-6">
+                <span className="mr-1 text-stone-300">—</span> {property.location}
               </p>
 
               {/* Price */}
-              <div className="bg-stone-50 border border-stone-200 p-6 mb-6">
+              <div className="hidden lg:block bg-stone-900 p-6 mb-6">
                 <p className="text-xs text-stone-400 tracking-widest uppercase mb-1">Precio</p>
-                <p className="font-display text-4xl font-light text-stone-900">
+                <p className="font-display text-4xl font-light text-white">
                   {formatPrice(property.price, property.operation)}
                 </p>
               </div>
@@ -190,16 +198,17 @@ export default async function PropertyDetailPage({
                     href={property.fotocasaUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full block text-center text-sm py-4 border border-[#69BE28] text-[#69BE28] hover:bg-[#69BE28] hover:text-white transition-colors duration-200"
+                    className="w-full block text-center text-sm py-4 border border-brand-red text-brand-red hover:bg-brand-red hover:text-white transition-colors duration-200"
                   >
-                    Ver en Idealista ↗
+                    Ver en Fotocasa ↗
                   </a>
                 )}
                 <a
                   href={phoneHref}
-                  className="block text-center text-sm text-stone-500 hover:text-stone-900 transition-colors py-2"
+                  className="inline-flex w-full items-center justify-center gap-2 text-sm py-4 border border-stone-300 text-stone-700 hover:border-stone-900 hover:text-stone-900 transition-colors duration-200"
                 >
-                  📞 +34 {CONTACT.phone.display}
+                  <PhoneIcon />
+                  +34 {CONTACT.phone.display}
                 </a>
               </div>
             </div>

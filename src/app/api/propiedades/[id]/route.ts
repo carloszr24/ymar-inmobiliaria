@@ -1,121 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createPublicSupabase } from '@/lib/supabase/public-server'
-import { createAdminSupabase } from '@/lib/supabase/admin'
 import { getAdminTokenFromRequest, verifyAdminSessionToken } from '@/lib/admin-session'
-import {
-  bodyToInsert,
-  rowToProperty,
-  wouldExceedFeaturedHomeLimit,
-  MAX_FEATURED_ON_HOME,
-  type PropertyRow,
-} from '@/lib/property-db'
+import { getPropertyById } from '@/lib/properties-store'
 
 function unauthorized() {
   return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 }
 
+function demoReadOnly() {
+  return NextResponse.json(
+    { error: 'Catálogo en modo demo (archivo local). Edita src/data/properties.ts.' },
+    { status: 501 }
+  )
+}
+
 export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
-  try {
-    const supabase = createPublicSupabase()
-    const { data, error } = await supabase
-      .from('properties')
-      .select('*')
-      .eq('id', params.id)
-      .maybeSingle()
-    if (error) throw error
-    if (!data) return NextResponse.json({ error: 'No encontrada' }, { status: 404 })
-    return NextResponse.json(rowToProperty(data as PropertyRow))
-  } catch {
-    return NextResponse.json({ error: 'Error' }, { status: 500 })
-  }
+  const property = getPropertyById(params.id)
+  if (!property) return NextResponse.json({ error: 'No encontrada' }, { status: 404 })
+  return NextResponse.json(property)
 }
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+  void params
   if (!verifyAdminSessionToken(getAdminTokenFromRequest(request))) {
     return unauthorized()
   }
-  try {
-    const body = await request.json()
-    const {
-      title, price, location, type, operation, status, description,
-      images, fotocasaUrl, bedrooms, bathrooms, sqMeters, featured,
-      availability, hotWater, heating, condition, propertyAge,
-      floor, garage, elevator, furnished, energyRating, energyValue,
-      emissionsRating, emissionsValue,
-    } = body
-
-    const row = bodyToInsert({
-      title,
-      price,
-      location,
-      type,
-      operation,
-      status,
-      description,
-      images,
-      fotocasaUrl,
-      bedrooms,
-      bathrooms,
-      sqMeters,
-      availability,
-      hotWater,
-      heating,
-      condition,
-      propertyAge,
-      floor,
-      garage,
-      elevator,
-      furnished,
-      energyRating,
-      energyValue,
-      emissionsRating,
-      emissionsValue,
-      featured,
-    })
-
-    const supabase = createAdminSupabase()
-    const { data: idFeaturedRows, error: countError } = await supabase
-      .from('properties')
-      .select('id, featured')
-    if (countError) throw countError
-    if (
-      wouldExceedFeaturedHomeLimit(idFeaturedRows ?? [], {
-        wantFeatured: row.featured,
-        editingPropertyId: params.id,
-      })
-    ) {
-      return NextResponse.json(
-        {
-          error: `Ya hay ${MAX_FEATURED_ON_HOME} propiedades destacadas en la home. Quita una antes de añadir otra.`,
-        },
-        { status: 400 }
-      )
-    }
-
-    const { data, error } = await supabase
-      .from('properties')
-      .update({ ...row, updated_at: new Date().toISOString() })
-      .eq('id', params.id)
-      .select('*')
-      .single()
-
-    if (error) throw error
-    return NextResponse.json(rowToProperty(data as PropertyRow))
-  } catch {
-    return NextResponse.json({ error: 'Error al actualizar' }, { status: 500 })
-  }
+  return demoReadOnly()
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+  void params
   if (!verifyAdminSessionToken(getAdminTokenFromRequest(request))) {
     return unauthorized()
   }
-  try {
-    const supabase = createAdminSupabase()
-    const { error } = await supabase.from('properties').delete().eq('id', params.id)
-    if (error) throw error
-    return NextResponse.json({ success: true })
-  } catch {
-    return NextResponse.json({ error: 'Error al eliminar' }, { status: 500 })
-  }
+  return demoReadOnly()
 }

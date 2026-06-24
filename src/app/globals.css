@@ -69,6 +69,20 @@
   }
 }
 
+.site-logo {
+  display: block;
+  width: auto !important;
+  height: 4.5rem !important;
+  max-height: 4.5rem !important;
+}
+
+@media (min-width: 768px) {
+  .site-logo {
+    height: 7.5rem !important;
+    max-height: 7.5rem !important;
+  }
+}
+
 /* Skeleton loading */
 .skeleton {
   @apply bg-stone-200 animate-skeleton rounded;

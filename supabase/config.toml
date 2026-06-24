@@ -1,0 +1,4 @@
+# https://supabase.com/docs/guides/cli/config
+
+[functions.notify-lead]
+verify_jwt = false
