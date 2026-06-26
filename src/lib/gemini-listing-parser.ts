@@ -90,7 +90,7 @@ export async function parseListingTextWithGemini(text: string): Promise<ParsedLi
     throw new Error('GEMINI_API_KEY no configurada')
   }
 
-  const modelName = process.env.GEMINI_MODEL?.trim() || 'gemini-2.0-flash'
+  const modelName = process.env.GEMINI_MODEL?.trim() || 'gemini-2.5-flash-lite'
   const genAI = new GoogleGenerativeAI(apiKey)
   const model = genAI.getGenerativeModel({
     model: modelName,
