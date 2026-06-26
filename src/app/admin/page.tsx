@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Property } from '@/types'
-import { MAX_FEATURED_ON_HOME } from '@/lib/property-db'
+import { MAX_FEATURED_ON_HOME, MAX_PROPERTY_IMAGES } from '@/lib/property-db'
 import { formatPrice, OPERATION_LABELS, PROPERTY_OPERATIONS, PROPERTY_STATUSES, PROPERTY_TYPES, STATUS_LABELS, TYPE_LABELS } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
@@ -239,7 +239,7 @@ export default function AdminPage() {
       if (f.size > maxBytes) continue
       next.push({ id: crypto.randomUUID(), kind: 'new', file: f, previewUrl: URL.createObjectURL(f) })
     }
-    if (next.length) setImageItems((prev) => [...prev, ...next].slice(0, 15))
+    if (next.length) setImageItems((prev) => [...prev, ...next].slice(0, MAX_PROPERTY_IMAGES))
   }
 
   const removeItem = async (id: string) => {
@@ -561,7 +561,7 @@ export default function AdminPage() {
                 <div className="border border-stone-200 p-4 space-y-3">
                   <div className="flex items-center justify-between gap-4">
                     <div className="text-xs text-stone-400">
-                      Sube hasta 15 imágenes (JPG/PNG/WebP, máx. 5MB). Arrastra para reordenar.
+                      Sube hasta {MAX_PROPERTY_IMAGES} imágenes (JPG/PNG/WebP, máx. 5MB cada una). Arrastra para reordenar.
                     </div>
                     <label className="btn-outline text-[11px] px-4 py-2 cursor-pointer">
                       + Añadir fotos

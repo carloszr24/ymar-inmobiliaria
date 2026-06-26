@@ -16,6 +16,9 @@ function normalizeExternalUrl(value?: string | null): string | null {
 /** Máximo de inmuebles destacados en la página de inicio (home). */
 export const MAX_FEATURED_ON_HOME = 3
 
+/** Máximo de fotos por propiedad en el panel admin. */
+export const MAX_PROPERTY_IMAGES = 50
+
 /** Coherente con el filtro de la home ante valores raros desde DB. */
 export function isFeaturedFlag(value: unknown): boolean {
   return value === true || value === 'true' || value === 't' || value === 1
