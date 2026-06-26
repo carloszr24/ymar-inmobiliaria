@@ -66,11 +66,6 @@ export const REVIEWS: Review[] = [
     text: 'Muy buena experiencia con Ángel: he vendido mi piso con total transparencia y atento en todo momento. Te guía para realizar los trámites pertinentes, te acompaña en cada paso, muy buen trato y excelente trabajo. Los recomiendo al 100%.',
   },
   {
-    id: 14,
-    name: 'Estíbaliz Pascua',
-    text: 'Profesionalidad y trato cercano. Destacaría especialmente la implicación de Ángel en el proceso de compraventa, estando pendiente de todos los trámites necesarios para que todo saliera correctamente. Al contrario que otras inmobiliarias, no cobran honorarios abusivos al comprador.',
-  },
-  {
     id: 15,
     name: 'Rayco Araña',
     text: 'Recomendada sin duda. Ángel, ante cualquier problema, no duda en hacer lo mejor para el cliente.',
