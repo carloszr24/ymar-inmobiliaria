@@ -6,14 +6,19 @@ import {
   getAdminCookieOptions,
   getAdminSessionMaxAgeSeconds,
   getClientIp,
+  isAdminAuthConfigured,
   isAdminIpAllowed,
   recordLoginFailure,
-  safeCompareStrings,
+  verifyAdminCredentials,
 } from '@/lib/admin-security'
 
 export async function POST(request: Request) {
   if (!isAdminIpAllowed(request)) {
     return NextResponse.json({ error: 'Acceso no permitido' }, { status: 403 })
+  }
+
+  if (!isAdminAuthConfigured()) {
+    return NextResponse.json({ error: 'Configuración de admin incompleta' }, { status: 503 })
   }
 
   const ip = getClientIp(request)
@@ -30,11 +35,11 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     const password = typeof body?.password === 'string' ? body.password : ''
-    const expected = process.env.ADMIN_PASSWORD?.trim() || ''
+    const pin = typeof body?.pin === 'string' ? body.pin : ''
 
-    if (!expected || !safeCompareStrings(password, expected)) {
+    if (!verifyAdminCredentials(password, pin)) {
       recordLoginFailure(ip)
-      return NextResponse.json({ ok: false, error: 'Contraseña incorrecta' }, { status: 401 })
+      return NextResponse.json({ ok: false, error: 'Contraseña o PIN incorrectos' }, { status: 401 })
     }
 
     const token = createAdminSessionToken()

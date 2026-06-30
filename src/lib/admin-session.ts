@@ -1,16 +1,16 @@
 import { createHmac, timingSafeEqual } from 'crypto'
 import type { NextRequest } from 'next/server'
 import {
+  credentialsSessionVersion,
   getAdminSessionMaxAgeSeconds,
   getSessionSecret,
-  passwordSessionVersion,
 } from '@/lib/admin-security'
 
 export const ADMIN_COOKIE_NAME = 'ymar_admin'
 
 export function createAdminSessionToken(): string {
   const secret = getSessionSecret()
-  const version = passwordSessionVersion()
+  const version = credentialsSessionVersion()
   if (!secret || !version) return ''
 
   const exp = Date.now() + getAdminSessionMaxAgeSeconds() * 1000
@@ -21,7 +21,7 @@ export function createAdminSessionToken(): string {
 
 export function verifyAdminSessionToken(token: string | undefined): boolean {
   const secret = getSessionSecret()
-  const version = passwordSessionVersion()
+  const version = credentialsSessionVersion()
   if (!token || !secret || !version) return false
 
   const dot = token.indexOf('.')
