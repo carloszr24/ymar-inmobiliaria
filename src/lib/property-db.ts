@@ -72,8 +72,8 @@ export type PropertyRow = {
   emissions_rating: string | null
   emissions_value: number | null
   featured: boolean
-  archived: boolean
-  sort_order: number
+  archived?: boolean
+  sort_order?: number
   created_at: string
   updated_at: string
 }
@@ -116,9 +116,20 @@ export function rowToProperty(r: PropertyRow): Property {
   }
 }
 
+function sortRowsByDisplayOrder(rows: PropertyRow[]): PropertyRow[] {
+  return [...rows].sort((a, b) => {
+    const aOrder = a.sort_order
+    const bOrder = b.sort_order
+    if (typeof aOrder === 'number' && typeof bOrder === 'number' && aOrder !== bOrder) {
+      return aOrder - bOrder
+    }
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  })
+}
+
 export function rowsToProperties(rows: PropertyRow[] | null): Property[] {
   if (!rows?.length) return []
-  return rows.map(rowToProperty)
+  return sortRowsByDisplayOrder(rows).map(rowToProperty)
 }
 
 export type PropertyInsert = {
@@ -260,11 +271,12 @@ export async function listFeaturedPropertyRows(): Promise<PropertyRow[]> {
     .from('properties')
     .select('*')
     .eq('featured', true)
-    .eq('archived', false)
     .order('created_at', { ascending: true })
-    .limit(MAX_FEATURED_ON_HOME)
+    .limit(MAX_FEATURED_ON_HOME + 10)
   if (error) throw new Error(error.message)
-  return (data ?? []) as PropertyRow[]
+  return sortRowsByDisplayOrder((data ?? []) as PropertyRow[])
+    .filter((row) => !isArchivedFlag(row.archived))
+    .slice(0, MAX_FEATURED_ON_HOME)
 }
 
 export async function listPropertyRows(): Promise<PropertyRow[]> {
@@ -272,10 +284,9 @@ export async function listPropertyRows(): Promise<PropertyRow[]> {
   const { data, error } = await supabase
     .from('properties')
     .select('*')
-    .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false })
   if (error) throw new Error(error.message)
-  return (data ?? []) as PropertyRow[]
+  return sortRowsByDisplayOrder((data ?? []) as PropertyRow[])
 }
 
 export async function getPropertyRowById(id: string): Promise<PropertyRow | null> {
@@ -285,7 +296,7 @@ export async function getPropertyRowById(id: string): Promise<PropertyRow | null
   return (data as PropertyRow | null) ?? null
 }
 
-async function nextSortOrder(): Promise<number> {
+async function nextSortOrder(): Promise<number | undefined> {
   const supabase = createAdminSupabase()
   const { data, error } = await supabase
     .from('properties')
@@ -293,7 +304,10 @@ async function nextSortOrder(): Promise<number> {
     .order('sort_order', { ascending: false })
     .limit(1)
     .maybeSingle()
-  if (error) throw new Error(error.message)
+  if (error) {
+    if (/sort_order/i.test(error.message)) return undefined
+    throw new Error(error.message)
+  }
   return ((data as { sort_order?: number } | null)?.sort_order ?? -1) + 1
 }
 
@@ -301,9 +315,10 @@ export async function createPropertyRow(insert: PropertyInsert, titleForSlug: st
   const supabase = createAdminSupabase()
   const id = await uniquePropertyId(slugifyTitle(titleForSlug))
   const sort_order = await nextSortOrder()
+  const payload = sort_order != null ? { ...insert, id, sort_order } : { ...insert, id }
   const { data, error } = await supabase
     .from('properties')
-    .insert({ ...insert, id, sort_order })
+    .insert(payload)
     .select('*')
     .single()
   if (error) throw new Error(error.message)
@@ -335,7 +350,12 @@ export async function updatePropertySortOrders(ids: string[]): Promise<void> {
   )
   const results = await Promise.all(updates)
   const failed = results.find((result) => result.error)
-  if (failed?.error) throw new Error(failed.error.message)
+  if (failed?.error) {
+    if (/sort_order/i.test(failed.error.message)) {
+      throw new Error('La columna sort_order no existe en Supabase. Ejecuta la migración SQL de orden.')
+    }
+    throw new Error(failed.error.message)
+  }
 }
 
 export async function setPropertyArchived(id: string, archived: boolean): Promise<PropertyRow> {
@@ -352,7 +372,12 @@ export async function setPropertyArchived(id: string, archived: boolean): Promis
     .eq('id', id)
     .select('*')
     .single()
-  if (error) throw new Error(error.message)
+  if (error) {
+    if (/archived/i.test(error.message)) {
+      throw new Error('La columna archived no existe en Supabase. Ejecuta la migración SQL de archivado.')
+    }
+    throw new Error(error.message)
+  }
   return data as PropertyRow
 }
 
