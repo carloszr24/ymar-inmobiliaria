@@ -36,7 +36,8 @@ export function PropertyCard({ property, variant = 'default', priority = false }
             <>
               <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent opacity-100 transition-opacity duration-300" />
               <span className={cn(
-                'absolute bottom-3 left-3 z-10 text-xs font-medium px-2.5 py-1 border backdrop-blur-sm',
+                'absolute bottom-3 left-3 z-10 text-xs font-medium px-2.5 py-1 border',
+                property.status !== 'vendido' && 'backdrop-blur-sm',
                 statusColors[property.status] || statusColors.disponible
               )}>
                 {STATUS_LABELS[property.status] || property.status}
