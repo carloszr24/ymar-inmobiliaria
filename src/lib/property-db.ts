@@ -68,6 +68,7 @@ export type PropertyRow = {
   emissions_rating: string | null
   emissions_value: number | null
   featured: boolean
+  sort_order: number
   created_at: string
   updated_at: string
 }
@@ -103,6 +104,7 @@ export function rowToProperty(r: PropertyRow): Property {
     emissionsRating: r.emissions_rating,
     emissionsValue: r.emissions_value,
     featured: r.featured,
+    sortOrder: r.sort_order ?? 0,
     createdAt: new Date(r.created_at),
     updatedAt: new Date(r.updated_at),
   }
@@ -142,6 +144,7 @@ export type PropertyInsert = {
   emissions_rating: string | null
   emissions_value: number | null
   featured: boolean
+  sort_order?: number
 }
 
 export function bodyToInsert(body: {
@@ -262,6 +265,7 @@ export async function listPropertyRows(): Promise<PropertyRow[]> {
   const { data, error } = await supabase
     .from('properties')
     .select('*')
+    .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false })
   if (error) throw new Error(error.message)
   return (data ?? []) as PropertyRow[]
@@ -274,12 +278,25 @@ export async function getPropertyRowById(id: string): Promise<PropertyRow | null
   return (data as PropertyRow | null) ?? null
 }
 
+async function nextSortOrder(): Promise<number> {
+  const supabase = createAdminSupabase()
+  const { data, error } = await supabase
+    .from('properties')
+    .select('sort_order')
+    .order('sort_order', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (error) throw new Error(error.message)
+  return ((data as { sort_order?: number } | null)?.sort_order ?? -1) + 1
+}
+
 export async function createPropertyRow(insert: PropertyInsert, titleForSlug: string): Promise<PropertyRow> {
   const supabase = createAdminSupabase()
   const id = await uniquePropertyId(slugifyTitle(titleForSlug))
+  const sort_order = await nextSortOrder()
   const { data, error } = await supabase
     .from('properties')
-    .insert({ ...insert, id })
+    .insert({ ...insert, id, sort_order })
     .select('*')
     .single()
   if (error) throw new Error(error.message)
@@ -302,6 +319,16 @@ export async function deletePropertyRow(id: string): Promise<void> {
   const supabase = createAdminSupabase()
   const { error } = await supabase.from('properties').delete().eq('id', id)
   if (error) throw new Error(error.message)
+}
+
+export async function updatePropertySortOrders(ids: string[]): Promise<void> {
+  const supabase = createAdminSupabase()
+  const updates = ids.map((id, index) =>
+    supabase.from('properties').update({ sort_order: index, updated_at: new Date().toISOString() }).eq('id', id)
+  )
+  const results = await Promise.all(updates)
+  const failed = results.find((result) => result.error)
+  if (failed?.error) throw new Error(failed.error.message)
 }
 
 export async function assertFeaturedHomeLimit(

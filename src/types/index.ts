@@ -28,6 +28,7 @@ export interface Property {
   emissionsRating?: string | null
   emissionsValue?: number | null
   featured: boolean
+  sortOrder: number
   createdAt: Date
   updatedAt: Date
 }

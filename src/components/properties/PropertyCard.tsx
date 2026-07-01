@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Property } from '@/types'
-import { formatPrice, OPERATION_LABELS, parseImages, STATUS_LABELS, TYPE_LABELS } from '@/lib/utils'
+import { formatPrice, OPERATION_LABELS, parseImages, STATUS_BADGE_CLASSES, STATUS_LABELS, TYPE_LABELS } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
 interface PropertyCardProps {
@@ -10,11 +10,7 @@ interface PropertyCardProps {
   priority?: boolean
 }
 
-const statusColors: Record<string, string> = {
-  disponible: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  reservado: 'bg-amber-50 text-amber-700 border-amber-200',
-  vendido: 'bg-stone-100 text-stone-500 border-stone-200',
-}
+const statusColors = STATUS_BADGE_CLASSES
 
 export function PropertyCard({ property, variant = 'default', priority = false }: PropertyCardProps) {
   const images = parseImages(property.images)

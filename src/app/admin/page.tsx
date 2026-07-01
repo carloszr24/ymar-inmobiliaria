@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Property } from '@/types'
 import { MAX_FEATURED_ON_HOME, MAX_PROPERTY_IMAGES } from '@/lib/property-db'
-import { formatPrice, OPERATION_LABELS, PROPERTY_OPERATIONS, PROPERTY_PROVINCES, PROPERTY_STATUSES, PROPERTY_TYPES, STATUS_LABELS, TYPE_LABELS } from '@/lib/utils'
+import { formatPrice, OPERATION_LABELS, PROPERTY_OPERATIONS, PROPERTY_PROVINCES, PROPERTY_STATUSES, PROPERTY_TYPES, STATUS_BADGE_CLASSES_ADMIN, STATUS_LABELS, TYPE_LABELS } from '@/lib/utils'
 import { getPropertyProvince } from '@/lib/property-location'
 import { getPropertyExtras, type PropertyExtraId } from '@/lib/property-extras'
 import { ExtrasDropdown } from '@/components/admin/ExtrasDropdown'
@@ -64,11 +64,7 @@ const emptyForm = {
   featured: false,
 }
 
-const statusColors: Record<string, string> = {
-  disponible: 'text-emerald-600 bg-emerald-50',
-  reservado: 'text-amber-600 bg-amber-50',
-  vendido: 'text-stone-500 bg-stone-100',
-}
+const statusColors = STATUS_BADGE_CLASSES_ADMIN
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false)
@@ -88,6 +84,7 @@ export default function AdminPage() {
   const [featuredCapError, setFeaturedCapError] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [pwErrorMsg, setPwErrorMsg] = useState<string | null>(null)
+  const [reordering, setReordering] = useState(false)
 
   useEffect(() => {
     fetch('/api/admin/session', { credentials: 'include' })
@@ -371,9 +368,44 @@ export default function AdminPage() {
     await fetchProperties()
   }
 
+  const sortedProperties = [...properties].sort((a, b) => {
+    const orderDiff = (a.sortOrder ?? 0) - (b.sortOrder ?? 0)
+    if (orderDiff !== 0) return orderDiff
+    return b.createdAt.getTime() - a.createdAt.getTime()
+  })
+
   const visibleProperties = adminProvinceFilter
-    ? properties.filter((p) => getPropertyProvince(p) === adminProvinceFilter)
-    : properties
+    ? sortedProperties.filter((p) => getPropertyProvince(p) === adminProvinceFilter)
+    : sortedProperties
+
+  const moveProperty = async (id: string, direction: 'up' | 'down') => {
+    if (adminProvinceFilter) return
+    const ordered = [...sortedProperties]
+    const index = ordered.findIndex((property) => property.id === id)
+    if (index < 0) return
+    const swapIndex = direction === 'up' ? index - 1 : index + 1
+    if (swapIndex < 0 || swapIndex >= ordered.length) return
+
+    const next = [...ordered]
+    ;[next[index], next[swapIndex]] = [next[swapIndex], next[index]]
+
+    setReordering(true)
+    try {
+      const res = await fetch('/api/propiedades/reorder', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ ids: next.map((property) => property.id) }),
+      })
+      if (res.ok) {
+        setProperties(next.map((property, sortOrder) => ({ ...property, sortOrder })))
+      } else {
+        await fetchProperties()
+      }
+    } finally {
+      setReordering(false)
+    }
+  }
 
   // PASSWORD SCREEN
   if (!authed) {
@@ -717,6 +749,16 @@ export default function AdminPage() {
 
       {/* TABLE */}
       <div className="bg-white border border-stone-200 overflow-hidden">
+        {!adminProvinceFilter && properties.length > 1 && (
+          <p className="border-b border-stone-100 px-4 py-2.5 text-xs text-stone-500">
+            Usa las flechas para cambiar el orden en la página de propiedades. Las nuevas se añaden al final.
+          </p>
+        )}
+        {adminProvinceFilter && (
+          <p className="border-b border-stone-100 px-4 py-2.5 text-xs text-stone-400">
+            Quita el filtro de provincia para reordenar el catálogo.
+          </p>
+        )}
         {loading ? (
           <div className="p-8 text-center text-stone-400 text-sm">Cargando...</div>
         ) : properties.length === 0 ? (
@@ -738,7 +780,7 @@ export default function AdminPage() {
             <table className="w-full text-sm">
               <thead className="bg-stone-50 border-b border-stone-200">
                 <tr>
-                  {['Título', 'Precio', 'Operación', 'Tipo', 'Estado', 'Provincia', 'Ubicación', 'Dest.', 'Acciones'].map(h => (
+                  {['Orden', 'Título', 'Precio', 'Operación', 'Tipo', 'Estado', 'Provincia', 'Ubicación', 'Dest.', 'Acciones'].map(h => (
                     <th key={h} className="text-left text-xs text-stone-500 font-medium px-4 py-3 tracking-wide">
                       {h}
                     </th>
@@ -746,8 +788,30 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100">
-                {visibleProperties.map((p) => (
+                {visibleProperties.map((p, index) => (
                   <tr key={p.id} className="hover:bg-stone-50 transition-colors">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => moveProperty(p.id, 'up')}
+                          disabled={reordering || adminProvinceFilter !== '' || index === 0}
+                          className="h-7 w-7 border border-stone-200 text-stone-600 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                          aria-label="Subir"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => moveProperty(p.id, 'down')}
+                          disabled={reordering || adminProvinceFilter !== '' || index === visibleProperties.length - 1}
+                          className="h-7 w-7 border border-stone-200 text-stone-600 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                          aria-label="Bajar"
+                        >
+                          ↓
+                        </button>
+                      </div>
+                    </td>
                     <td className="px-4 py-3">
                       <span className="font-medium text-stone-900 line-clamp-1 max-w-[200px] block">
                         {p.title}

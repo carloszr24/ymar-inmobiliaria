@@ -43,12 +43,16 @@ function parseExtrasParam(extras?: string, legacyExtra?: string): string[] {
   return legacyExtra ? [legacyExtra] : []
 }
 
-function sortByDate(properties: Property[]): Property[] {
-  return [...properties].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+function sortByDisplayOrder(properties: Property[]): Property[] {
+  return [...properties].sort((a, b) => {
+    const orderDiff = (a.sortOrder ?? 0) - (b.sortOrder ?? 0)
+    if (orderDiff !== 0) return orderDiff
+    return b.createdAt.getTime() - a.createdAt.getTime()
+  })
 }
 
 function demoCatalog(): Property[] {
-  return sortByDate(DEMO_PROPERTIES)
+  return sortByDisplayOrder(DEMO_PROPERTIES)
 }
 
 export async function getAllProperties(): Promise<Property[]> {
