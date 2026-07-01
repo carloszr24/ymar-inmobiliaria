@@ -141,16 +141,7 @@ export function filterProperties(
 
 export async function getFeaturedPropertiesForHome(): Promise<Property[]> {
   const catalog = await getAllProperties()
-  const featured = catalog.filter((p) => isFeaturedFlag(p.featured))
-  if (featured.length >= MAX_FEATURED_ON_HOME) {
-    return featured.slice(0, MAX_FEATURED_ON_HOME)
-  }
-  const fill = [...featured]
-  for (const p of catalog) {
-    if (fill.length >= MAX_FEATURED_ON_HOME) break
-    if (!fill.some((x) => x.id === p.id)) fill.push(p)
-  }
-  return fill
+  return catalog.filter((p) => isFeaturedFlag(p.featured)).slice(0, MAX_FEATURED_ON_HOME)
 }
 
 export function applyPropertyFilters(properties: Property[], filters: PropertyFilters): Property[] {
