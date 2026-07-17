@@ -8,5 +8,10 @@ export function createAdminSupabase() {
   }
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
+    global: {
+      // Evita que Next.js cachee lecturas de propiedades/leads en SSR
+      // (si no, la web puede seguir mostrando listados viejos tras cambios en Supabase).
+      fetch: (input, init) => fetch(input, { ...init, cache: 'no-store' }),
+    },
   })
 }
