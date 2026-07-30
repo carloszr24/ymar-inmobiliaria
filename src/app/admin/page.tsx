@@ -139,7 +139,16 @@ export default function AdminPage() {
     try {
       const res = await fetch('/api/propiedades', { credentials: 'include' })
       const data = await res.json().catch(() => ([]))
-      if (res.ok && Array.isArray(data)) setProperties(data)
+      if (res.ok && Array.isArray(data)) {
+        // JSON serializa Date como string; normalizamos para evitar crashes en .getTime()
+        setProperties(
+          data.map((p: Property) => ({
+            ...p,
+            createdAt: p.createdAt instanceof Date ? p.createdAt : new Date(p.createdAt as unknown as string),
+            updatedAt: p.updatedAt instanceof Date ? p.updatedAt : new Date(p.updatedAt as unknown as string),
+          }))
+        )
+      }
     } finally {
       setLoading(false)
     }
@@ -379,7 +388,9 @@ export default function AdminPage() {
   const sortedProperties = [...properties].sort((a, b) => {
     const orderDiff = (a.sortOrder ?? 0) - (b.sortOrder ?? 0)
     if (orderDiff !== 0) return orderDiff
-    return b.createdAt.getTime() - a.createdAt.getTime()
+    const aTime = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt as unknown as string).getTime()
+    const bTime = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt as unknown as string).getTime()
+    return (Number.isFinite(bTime) ? bTime : 0) - (Number.isFinite(aTime) ? aTime : 0)
   })
 
   const visibleProperties = sortedProperties

@@ -190,7 +190,11 @@ export default function AdminLeadsPage() {
     if (statusFilter !== 'all') {
       list = list.filter((lead) => lead.status === statusFilter)
     }
-    return [...list].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    return [...list].sort((a, b) => {
+      const aTime = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt as unknown as string).getTime()
+      const bTime = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt as unknown as string).getTime()
+      return (Number.isFinite(bTime) ? bTime : 0) - (Number.isFinite(aTime) ? aTime : 0)
+    })
   }, [leads, sourceFilter, statusFilter])
 
   const stats = useMemo(() => {
