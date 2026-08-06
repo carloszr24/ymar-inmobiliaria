@@ -33,10 +33,13 @@ export async function POST(request: NextRequest) {
   const optimized = await optimizePropertyImage(originalBuffer)
   const objectPath = `properties/${propertyId}/${crypto.randomUUID()}.${optimized.ext}`
 
+  // Uint8Array/Blob: evita corrupción UTF-8 si un Buffer de Node se serializa como texto
+  const uploadBody = new Blob([new Uint8Array(optimized.data)], { type: optimized.contentType })
+
   const supabase = createAdminSupabase()
   const { error: upErr } = await supabase.storage
     .from(BUCKET)
-    .upload(objectPath, optimized.data, { contentType: optimized.contentType, upsert: false })
+    .upload(objectPath, uploadBody, { contentType: optimized.contentType, upsert: false })
 
   if (upErr) {
     return NextResponse.json({ error: upErr.message }, { status: 500 })
