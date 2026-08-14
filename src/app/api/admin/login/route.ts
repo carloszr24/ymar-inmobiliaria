@@ -6,11 +6,10 @@ import {
   getAdminCookieOptions,
   getAdminSessionMaxAgeSeconds,
   getClientIp,
-  isAdminAuthConfigured,
   isAdminIpAllowed,
   recordLoginFailure,
-  verifyAdminLogin,
 } from '@/lib/admin-security'
+import { isAdminAuthConfigured, verifyAdminLogin } from '@/lib/admin-auth'
 
 export async function POST(request: Request) {
   if (!isAdminIpAllowed(request)) {
@@ -22,7 +21,7 @@ export async function POST(request: Request) {
   }
 
   const ip = getClientIp(request)
-  const rate = checkLoginRateLimit(ip)
+  const rate = await checkLoginRateLimit(ip)
   if (!rate.ok) {
     return NextResponse.json(
       {
@@ -38,7 +37,7 @@ export async function POST(request: Request) {
     const pin = typeof body?.pin === 'string' ? body.pin : ''
 
     if (!verifyAdminLogin(password, pin)) {
-      recordLoginFailure(ip)
+      await recordLoginFailure(ip)
       return NextResponse.json({ ok: false, error: 'Contraseña o PIN incorrectos' }, { status: 401 })
     }
 
@@ -47,7 +46,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Configuración de admin incompleta' }, { status: 503 })
     }
 
-    clearLoginAttempts(ip)
+    await clearLoginAttempts(ip)
     const maxAge = getAdminSessionMaxAgeSeconds()
     const res = NextResponse.json({ ok: true })
     res.cookies.set(ADMIN_COOKIE_NAME, token, getAdminCookieOptions(maxAge))

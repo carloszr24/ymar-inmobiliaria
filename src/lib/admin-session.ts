@@ -1,10 +1,7 @@
 import { createHmac, timingSafeEqual } from 'crypto'
 import type { NextRequest } from 'next/server'
-import {
-  getAdminSessionMaxAgeSeconds,
-  getSessionSecret,
-  passwordSessionVersion,
-} from '@/lib/admin-security'
+import { getAdminSessionMaxAgeSeconds, getSessionSecret } from '@/lib/admin-security'
+import { passwordSessionVersion } from '@/lib/admin-auth'
 
 export const ADMIN_COOKIE_NAME = 'ymar_admin'
 

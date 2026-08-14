@@ -1,14 +1,18 @@
-import { createHmac, timingSafeEqual } from 'crypto'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
+import {
+  checkRateLimit,
+  isRateLimitBlocked,
+  resetRateLimit,
+} from '@/lib/rate-limiter'
 
-const LOGIN_WINDOW_MS = 15 * 60 * 1000
 const MAX_LOGIN_ATTEMPTS = 5
-const LOGIN_LOCK_MS = 30 * 60 * 1000
+const LOGIN_WINDOW_MINUTES = 15
+const LOGIN_BLOCK_MINUTES = 30
 
-type AttemptRecord = { count: number; firstAt: number; lockedUntil?: number }
-
-const loginAttempts = new Map<string, AttemptRecord>()
+function loginRateLimitKey(ip: string): string {
+  return `login:${ip}`
+}
 
 export function getClientIp(request: NextRequest | Request): string {
   const forwarded = request.headers.get('x-forwarded-for')
@@ -55,93 +59,40 @@ export function adminAccessDeniedResponse(status = 403): NextResponse {
   )
 }
 
-export function checkLoginRateLimit(ip: string): { ok: true } | { ok: false; retryAfterSec: number } {
-  const now = Date.now()
-  const record = loginAttempts.get(ip)
+export async function checkLoginRateLimit(
+  ip: string
+): Promise<{ ok: true } | { ok: false; retryAfterSec: number }> {
+  const status = await isRateLimitBlocked(loginRateLimitKey(ip))
+  if (!status.blocked || !status.retryAfter) return { ok: true }
 
-  if (record?.lockedUntil && record.lockedUntil > now) {
-    return { ok: false, retryAfterSec: Math.ceil((record.lockedUntil - now) / 1000) }
+  return {
+    ok: false,
+    retryAfterSec: Math.max(1, Math.ceil((status.retryAfter.getTime() - Date.now()) / 1000)),
   }
-
-  if (record?.lockedUntil && record.lockedUntil <= now) {
-    loginAttempts.delete(ip)
-  }
-
-  return { ok: true }
 }
 
-export function recordLoginFailure(ip: string): void {
-  const now = Date.now()
-  const record = loginAttempts.get(ip)
-
-  if (!record || now - record.firstAt > LOGIN_WINDOW_MS) {
-    loginAttempts.set(ip, { count: 1, firstAt: now })
-    return
-  }
-
-  const nextCount = record.count + 1
-  if (nextCount >= MAX_LOGIN_ATTEMPTS) {
-    loginAttempts.set(ip, {
-      count: nextCount,
-      firstAt: record.firstAt,
-      lockedUntil: now + LOGIN_LOCK_MS,
-    })
-    return
-  }
-
-  loginAttempts.set(ip, { count: nextCount, firstAt: record.firstAt })
+export async function recordLoginFailure(ip: string): Promise<void> {
+  await checkRateLimit(loginRateLimitKey(ip), {
+    maxAttempts: MAX_LOGIN_ATTEMPTS,
+    windowMinutes: LOGIN_WINDOW_MINUTES,
+    blockMinutes: LOGIN_BLOCK_MINUTES,
+  })
 }
 
-export function clearLoginAttempts(ip: string): void {
-  loginAttempts.delete(ip)
-}
-
-export function safeCompareStrings(a: string, b: string): boolean {
-  const bufA = Buffer.from(a, 'utf8')
-  const bufB = Buffer.from(b, 'utf8')
-  if (bufA.length !== bufB.length) {
-    timingSafeEqual(bufA, bufA)
-    return false
-  }
-  return timingSafeEqual(bufA, bufB)
+export async function clearLoginAttempts(ip: string): Promise<void> {
+  await resetRateLimit(loginRateLimitKey(ip))
 }
 
 export function getSessionSecret(): string {
-  return (
-    process.env.ADMIN_SESSION_SECRET?.trim() ||
-    process.env.ADMIN_PASSWORD?.trim() ||
-    ''
-  )
-}
-
-export function passwordSessionVersion(): string {
-  const password = process.env.ADMIN_PASSWORD?.trim() || ''
-  if (!password || !getSessionSecret()) return ''
-  return createHmac('sha256', getSessionSecret()).update(password).digest('base64url').slice(0, 16)
-}
-
-export function isAdminAuthConfigured(): boolean {
-  return Boolean(
-    process.env.ADMIN_PASSWORD?.trim() &&
-    process.env.ADMIN_PIN?.trim() &&
-    getSessionSecret()
-  )
-}
-
-export function verifyAdminPassword(password: string): boolean {
-  const expectedPassword = process.env.ADMIN_PASSWORD?.trim() || ''
-  if (!expectedPassword) return false
-  return safeCompareStrings(password, expectedPassword)
-}
-
-export function verifyAdminPin(pin: string): boolean {
-  const expectedPin = process.env.ADMIN_PIN?.trim() || ''
-  if (!expectedPin) return false
-  return safeCompareStrings(pin, expectedPin)
-}
-
-export function verifyAdminLogin(password: string, pin: string): boolean {
-  return verifyAdminPassword(password) && verifyAdminPin(pin)
+  const secret = process.env.ADMIN_SESSION_SECRET?.trim()
+  if (secret) return secret
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      '[admin-security] ADMIN_SESSION_SECRET es obligatorio en producción. ' +
+      'Genera uno con: openssl rand -base64 32'
+    )
+  }
+  return process.env.ADMIN_PASSWORD?.trim() || 'dev-secret-inseguro'
 }
 
 export function getAdminSessionMaxAgeSeconds(): number {
