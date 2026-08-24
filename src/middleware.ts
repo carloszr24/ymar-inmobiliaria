@@ -23,7 +23,12 @@ export function middleware(request: NextRequest) {
     return adminAccessDeniedResponse(403)
   }
 
-  // La autenticación la validan las API routes (Node). Aquí solo IP + cabeceras.
+  // Todas las páginas /admin/* son client components envueltos en
+  // AdminAuthGuard, que verifica la sesión contra /api/admin/session
+  // (verificación HMAC completa) y muestra el login si no hay sesión
+  // válida. Las API Routes también verifican el token en cada mutación.
+  // El middleware ya no redirige por presencia de cookie: esa comprobación
+  // naive causaba falsos rebotes a /admin?auth=required en subrutas.
   return applyAdminSecurityHeaders(NextResponse.next())
 }
 
