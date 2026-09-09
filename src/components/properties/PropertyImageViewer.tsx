@@ -10,7 +10,7 @@ interface PropertyImageViewerProps {
 }
 
 export function PropertyImageViewer({ images, title }: PropertyImageViewerProps) {
-  const safeImages = images.length > 0 ? images : ['https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200']
+  const safeImages = images
   const [index, setIndex] = useState(0)
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
   const [lightboxOpen, setLightboxOpen] = useState(false)
@@ -57,6 +57,14 @@ export function PropertyImageViewer({ images, title }: PropertyImageViewerProps)
     setZoom(1)
   }, [index, lightboxOpen])
 
+  if (safeImages.length === 0) {
+    return (
+      <div className="relative aspect-[16/10] overflow-hidden bg-stone-100 mb-10 flex items-center justify-center text-stone-400">
+        <span className="text-xs uppercase tracking-[0.18em]">Sin fotos disponibles</span>
+      </div>
+    )
+  }
+
   return (
     <>
       <div
@@ -70,7 +78,7 @@ export function PropertyImageViewer({ images, title }: PropertyImageViewerProps)
           fill
           className="object-cover"
           priority
-          quality={80}
+          unoptimized
           sizes="(max-width: 1024px) 100vw, 60vw"
         />
         <button
@@ -139,7 +147,7 @@ export function PropertyImageViewer({ images, title }: PropertyImageViewerProps)
                 alt={`${title} miniatura ${i + 1}`}
                 fill
                 className="object-cover"
-                quality={60}
+                unoptimized
                 loading="lazy"
                 sizes="96px"
               />
@@ -157,7 +165,7 @@ export function PropertyImageViewer({ images, title }: PropertyImageViewerProps)
                 alt=""
                 fill
                 className="object-cover scale-110 blur-[3px] brightness-75"
-                quality={50}
+                unoptimized
                 loading="lazy"
                 sizes="96px"
                 aria-hidden
@@ -218,7 +226,7 @@ export function PropertyImageViewer({ images, title }: PropertyImageViewerProps)
                   alt={`${title} ampliada ${index + 1}`}
                   fill
                   className="object-contain"
-                  quality={85}
+                  unoptimized
                   sizes="100vw"
                 />
               </div>

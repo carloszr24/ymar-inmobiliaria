@@ -14,7 +14,7 @@ const statusColors = STATUS_BADGE_CLASSES
 
 export function PropertyCard({ property, variant = 'default', priority = false }: PropertyCardProps) {
   const images = parseImages(property.images)
-  const firstImage = images[0] || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800'
+  const firstImage = images[0]
   const isFeaturedMinimal = variant === 'featuredMinimal'
 
   return (
@@ -22,15 +22,21 @@ export function PropertyCard({ property, variant = 'default', priority = false }
       <article className="card-hover overflow-hidden bg-white border border-stone-100">
         {/* Image */}
         <div className={cn('relative overflow-hidden bg-stone-100', isFeaturedMinimal ? 'aspect-[3/4]' : 'aspect-[16/10]')}>
-          <Image
-            src={firstImage}
-            alt={property.title}
-            fill
-            priority={priority}
-            quality={75}
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes={isFeaturedMinimal ? '(max-width: 768px) 86vw, (max-width: 1024px) 68vw, 31vw' : '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'}
-          />
+          {firstImage ? (
+            <Image
+              src={firstImage}
+              alt={property.title}
+              fill
+              priority={priority}
+              unoptimized
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes={isFeaturedMinimal ? '(max-width: 768px) 86vw, (max-width: 1024px) 68vw, 31vw' : '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'}
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center bg-stone-100 text-stone-400">
+              <span className="text-xs uppercase tracking-[0.18em]">Sin foto disponible</span>
+            </div>
+          )}
           {/* Status badge */}
           {!isFeaturedMinimal && (
             <>
