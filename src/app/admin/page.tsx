@@ -7,6 +7,7 @@ import { formatPrice, OPERATION_LABELS, PROPERTY_OPERATIONS, PROPERTY_PROVINCES,
 import { getPropertyProvince } from '@/lib/property-location'
 import { getPropertyExtras, type PropertyExtraId } from '@/lib/property-extras'
 import { ExtrasDropdown } from '@/components/admin/ExtrasDropdown'
+import { AdminAuthGuard } from '@/components/admin/AdminAuthGuard'
 import { cn } from '@/lib/utils'
 
 type ImageItem =
@@ -67,11 +68,14 @@ const emptyForm = {
 const statusColors = STATUS_BADGE_CLASSES_ADMIN
 
 export default function AdminPage() {
-  const [authed, setAuthed] = useState(false)
-  const [password, setPassword] = useState('')
-  const [pin, setPin] = useState('')
-  const [pwError, setPwError] = useState(false)
+  return (
+    <AdminAuthGuard>
+      {({ logout }) => <AdminPropertiesPanel logout={logout} />}
+    </AdminAuthGuard>
+  )
+}
 
+function AdminPropertiesPanel({ logout }: { logout: () => Promise<void> }) {
   const [properties, setProperties] = useState<Property[]>([])
   const [adminProvinceFilter, setAdminProvinceFilter] = useState('')
   const [adminArchiveFilter, setAdminArchiveFilter] = useState<'active' | 'archived' | 'all'>('active')
@@ -85,53 +89,8 @@ export default function AdminPage() {
   const [archiveConfirm, setArchiveConfirm] = useState<{ id: string; action: 'archive' | 'restore' } | null>(null)
   const [featuredCapError, setFeaturedCapError] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const [pwErrorMsg, setPwErrorMsg] = useState<string | null>(null)
+  const [imageError, setImageError] = useState<string | null>(null)
   const [reordering, setReordering] = useState(false)
-
-  useEffect(() => {
-    fetch('/api/admin/session', { credentials: 'include' })
-      .then(async (r) => {
-        const data = await r.json().catch(() => ({}))
-        return data
-      })
-      .then((data: { authed?: boolean }) => {
-        if (data.authed) setAuthed(true)
-      })
-      .catch(() => {})
-  }, [])
-
-  const login = async () => {
-    setPwError(false)
-    setPwErrorMsg(null)
-    try {
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ password, pin }),
-      })
-      const data = (await res.json().catch(() => ({}))) as { error?: string }
-      if (res.ok) {
-        setAuthed(true)
-        setPassword('')
-        setPin('')
-        return
-      }
-      if (res.status === 429) {
-        setPwErrorMsg(data.error || 'Demasiados intentos. Espera unos minutos.')
-        return
-      }
-      if (res.status === 403) {
-        setPwErrorMsg('Acceso no permitido desde esta red.')
-        return
-      }
-      setPwError(true)
-      setPwErrorMsg(data.error || 'Contraseña o PIN incorrectos')
-    } catch {
-      setPwError(true)
-      setPwErrorMsg('No se pudo conectar. Inténtalo de nuevo.')
-    }
-  }
 
   // Fetch
   const fetchProperties = async () => {
@@ -155,8 +114,8 @@ export default function AdminPage() {
   }
 
   useEffect(() => {
-    if (authed) fetchProperties()
-  }, [authed])
+    fetchProperties()
+  }, [])
 
   // Form handlers
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -235,11 +194,19 @@ export default function AdminPage() {
     const allowed = new Set(['image/jpeg', 'image/png', 'image/webp'])
     const maxBytes = 5 * 1024 * 1024
     const next: ImageItem[] = []
+    const rejected: string[] = []
     for (const f of Array.from(files)) {
-      if (!allowed.has(f.type)) continue
-      if (f.size > maxBytes) continue
+      if (!allowed.has(f.type)) {
+        rejected.push(`${f.name}: formato no admitido (usa JPG, PNG o WebP; si es una foto de iPhone, expórtala como JPG)`)
+        continue
+      }
+      if (f.size > maxBytes) {
+        rejected.push(`${f.name}: pesa más de 5MB`)
+        continue
+      }
       next.push({ id: crypto.randomUUID(), kind: 'new', file: f, previewUrl: URL.createObjectURL(f) })
     }
+    setImageError(rejected.length ? rejected.join(' · ') : null)
     if (next.length) setImageItems((prev) => [...prev, ...next].slice(0, MAX_PROPERTY_IMAGES))
   }
 
@@ -298,6 +265,12 @@ export default function AdminPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (imageItems.length === 0) {
+      const confirmed = window.confirm(
+        'No has añadido ninguna foto. La propiedad se publicará sin imágenes. ¿Continuar?'
+      )
+      if (!confirmed) return
+    }
     setSaving(true)
     setSubmitError(null)
     try {
@@ -369,6 +342,13 @@ export default function AdminPage() {
       setShowForm(false)
       setEditingId(null)
       await fetchProperties()
+    } catch (err) {
+      setSubmitError(
+        editingId
+          ? 'La propiedad se guardó, pero falló la subida de alguna imagen. Revisa las fotos e inténtalo de nuevo.'
+          : 'La propiedad se creó, pero falló la subida de alguna imagen. Ábrela con "Editar" para volver a intentarlo.'
+      )
+      console.error('[admin] Error al guardar propiedad/imágenes:', err)
     } finally {
       setSaving(false)
     }
@@ -430,53 +410,6 @@ export default function AdminPage() {
     }
   }
 
-  // PASSWORD SCREEN
-  if (!authed) {
-    return (
-      <div className="min-h-[80vh] flex items-center justify-center">
-        <div className="w-full max-w-sm">
-          <h1 className="font-display text-3xl font-light text-stone-900 mb-8 text-center">Acceso admin</h1>
-          <div className="space-y-4">
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setPwError(false); setPwErrorMsg(null) }}
-              onKeyDown={(e) => e.key === 'Enter' && login()}
-              placeholder="Contraseña"
-              autoComplete="current-password"
-              className={cn(
-                'w-full border px-4 py-3 text-sm focus:outline-none transition-colors',
-                pwError ? 'border-red-300 bg-red-50' : 'border-stone-200 focus:border-stone-900'
-              )}
-            />
-            <input
-              type="password"
-              inputMode="numeric"
-              value={pin}
-              onChange={(e) => { setPin(e.target.value); setPwError(false); setPwErrorMsg(null) }}
-              onKeyDown={(e) => e.key === 'Enter' && login()}
-              placeholder="PIN"
-              autoComplete="one-time-code"
-              className={cn(
-                'w-full border px-4 py-3 text-sm focus:outline-none transition-colors tracking-[0.3em]',
-                pwError ? 'border-red-300 bg-red-50' : 'border-stone-200 focus:border-stone-900'
-              )}
-            />
-            {pwErrorMsg && <p className="text-red-500 text-xs">{pwErrorMsg}</p>}
-            <button onClick={login} className="btn-primary w-full py-3 text-sm">
-              Entrar
-            </button>
-            {process.env.NODE_ENV === 'development' && (
-              <p className="text-xs text-stone-400 text-center">
-                Local: <code className="bg-stone-100 px-1">ADMIN_PASSWORD</code> y <code className="bg-stone-100 px-1">ADMIN_PIN</code> en <code className="bg-stone-100 px-1">.env</code>
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -514,8 +447,7 @@ export default function AdminPage() {
           <button
             type="button"
             onClick={async () => {
-              await fetch('/api/admin/logout', { method: 'POST', credentials: 'include' })
-              setAuthed(false)
+              await logout()
             }}
             className="text-xs text-stone-500 hover:text-stone-900 transition-colors"
           >
@@ -635,6 +567,15 @@ export default function AdminPage() {
                   <div className="flex items-center justify-between gap-4">
                     <div className="text-xs text-stone-400">
                       Sube hasta {MAX_PROPERTY_IMAGES} imágenes (JPG/PNG/WebP, máx. 5MB cada una). Arrastra para reordenar.
+                      {' '}Si la foto es de un móvil y pesa mucho, comprímela antes en{' '}
+                      <a
+                        href="https://tinypng.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline text-stone-500 hover:text-stone-900"
+                      >
+                        tinypng.com
+                      </a>.
                     </div>
                     <label className="btn-outline text-[11px] px-4 py-2 cursor-pointer">
                       + Añadir fotos
@@ -647,6 +588,10 @@ export default function AdminPage() {
                       />
                     </label>
                   </div>
+
+                  {imageError && (
+                    <p className="text-red-600 text-xs bg-red-50 border border-red-100 px-3 py-2">{imageError}</p>
+                  )}
 
                   {imageItems.length === 0 ? (
                     <div className="text-sm text-stone-400 py-6 text-center">
